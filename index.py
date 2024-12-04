@@ -864,7 +864,6 @@ def menu_penjual(email):
                     edit_barang_penjual(user)
                     kondisi2 = False
                 elif pilihan == '3':
-                    tampilkan_histori(user)
                     kondisi2 = False
                 elif pilihan == '4':
                     kondisi2 = False
@@ -904,6 +903,7 @@ def menu_pembeli(email):
                 elif pilihan == '2':
                     menu_belibarang()
                 elif pilihan == '3':
+                    tampilkan_riwayat_belanja()
                     kondisi2 = False
                 elif pilihan == '4':
                     kondisi2 = False
@@ -1270,34 +1270,10 @@ def edit_stok(user):
     
     i = input('\nTekan enter untuk kembali')
 
-def tampilkan_histori(user):
-    sub_folder = os.path.join('data_toko', f'toko_{user}')
-    histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
-
-    # Pastikan file histori ada
-    if not os.path.exists(histori_file):
-        print("File histori belum dibuat.")
-        return
-
-    # Baca file histori
-    histori_df = pd.read_csv(histori_file)
-
-    print('╔' + '═' * 50 + '╗')
-    print('║' + 'Histori Penjualan'.center(50) + '║')
-    print('╚' + '═' * 50 + '╝')
-
-    if histori_df.empty:
-        print("Tidak ada histori penjualan.")
-        return
-
-    # Tampilkan histori
-    for index, row in histori_df.iterrows():
-        print(f"{index + 1}. Barang: {row['barang']}, Terjual: {row['terjual']}")
-    print()
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<BAGIAN PEMBELI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 keranjang = []
+riwayat_belanja = []
 
 # Fungsi untuk menampilkan daftar toko
 def daftar_toko():
@@ -1447,19 +1423,59 @@ def checkout(total_harga):
     
     print(f'{"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
     print('-' * 78)
+
+    # Validasi dan tampilkan barang di keranjang
+    transaksi = []  # Menyimpan transaksi saat ini
     for item in keranjang:
-        subtotal = item['jumlah'] * item['harga']
-        print(f'{item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{subtotal:<12}')
-        # Validasi struktur data item
         if not all(key in item for key in ['barang', 'harga', 'jumlah', 'toko']):
             continue
+
+        subtotal = item['jumlah'] * item['harga']
+        print(f'{item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{subtotal:<12}')
+        
+        # Tambahkan item ke transaksi saat ini
+        transaksi.append({
+            'barang': item['barang'],
+            'toko': item['toko'],
+            'jumlah': item['jumlah'],
+            'harga': item['harga'],
+            'subtotal': subtotal
+        })
 
     print('-' * 78)
     print(f'Total Belanja: Rp{total_harga:,}')
     print('\nTerima kasih telah berbelanja!')
-    
+
+    # Simpan transaksi ke riwayat belanja
+    riwayat_belanja.append({
+        'total': total_harga,
+        'item': transaksi
+    })
+
     # Kosongkan keranjang
     keranjang.clear()
+    input('\nTekan enter untuk kembali ke menu utama')
+
+def tampilkan_riwayat_belanja():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('╔' + '═' * 48 + '╗')
+    print('║' + 'Riwayat Belanja'.center(48) + '║')
+    print('╚' + '═' * 48 + '╝')
+    print()
+
+    if not riwayat_belanja:
+        print('Belum ada riwayat belanja.')
+    else:
+        for i, transaksi in enumerate(riwayat_belanja, start=1):
+            print(f'Transaksi #{i}')
+            print(f'{"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
+            print('-' * 78)
+            for item in transaksi['item']:
+                print(f'{item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{item["subtotal"]:<12}')
+            print('-' * 78)
+            print(f'Total Belanja: Rp{transaksi["total"]:,}')
+            print()
+
     input('\nTekan enter untuk kembali ke menu utama')
 
 def hapus_keranjang_belanja():
