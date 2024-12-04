@@ -308,7 +308,7 @@ def edit_akun_seller():
         print('║' + 'Penjual'.center(48) + '║')
         print('╚' + '═'*48 + '╝')
         
-        print('\n1. Lihat akun penjual\n2. Tambah akun penjual\n3. Edit akun penjual\n4. Hapus akun penjual\n5. Kembali')
+        print('\n1. Lihat akun penjual\n2. Tambah akun penjual\n3. Ubah akun penjual\n4. Hapus akun penjual\n5. Kembali')
         
         pilih2 = True
         
@@ -432,7 +432,7 @@ def ubah_akun_seller():
             kembali +=1
             print('Masukkan ID penjual yang valid!')
         
-    username = input('\nMasukkan nama baru : ')
+    username = input('\nMasukkan username baru : ')
     
     while kondisi2:
         password = input('Masukkan password baru : ')
@@ -576,7 +576,7 @@ def edit_akun_buyer():
         print('║' + 'Menu Edit Akun Buyer'.center(48) + '║')
         print('╚' + '═'*48 + '╝')
         
-        print('\n1. Lihat akun pembeli\n2. Tambah akun pembeli\n3. Edit akun pembeli\n4. Hapus akun pembeli\n5. Kembali')
+        print('\n1. Lihat akun pembeli\n2. Tambah akun pembeli\n3. Ubah akun pembeli\n4. Hapus akun pembeli\n5. Kembali')
         
         pilih2 = True
         
@@ -850,7 +850,7 @@ def menu_penjual(email):
         print('║' + user.center(48) + '║')
         print('╚' + '═'*48 + '╝')
         
-        print('\n1. Profil akun\n2. Edit barang\n3. Total penjualan\n4. Keluar akun')
+        print('\n1. Profil akun\n2. Edit barang\n3. Riwayat Penjualan\n4. Total Penjualan\n5. Keluar akun')
         
         kondisi2 = True
         
@@ -864,8 +864,11 @@ def menu_penjual(email):
                     edit_barang_penjual(user)
                     kondisi2 = False
                 elif pilihan == '3':
+                    tampilkan_histori(user)
                     kondisi2 = False
                 elif pilihan == '4':
+                    kondisi2 = False
+                elif pilihan == '5':
                     kondisi2 = False
                     kondisi = False
                 else:
@@ -1023,16 +1026,19 @@ def list_barang(user):
     
     if baca.empty:
         print('Tidak ada barang dalam toko ini!')
-        
         i = input('\nTekan enter untuk kembali')
         return
     
     print('List barang:')
+    print(f"{'No':<5}{'Nama Barang':<20}{'Harga':<10}{'Stok':<10}")
+    print('-' * 45)
     for index, row in baca.iterrows():
+        no = index + 1
         barang = row['barang']
         harga = row['harga']
         stok = row['stok']
-        print(f'{index + 1}. {barang} | harga = {harga} | stok = {stok}')
+        print(f"{no:<5}{barang:<20}{harga:<10}{stok:<10}")
+    print('-' * 45)
     
     i = input('\nTekan enter untuk kembali')
 
@@ -1117,6 +1123,13 @@ def hapus_barang(user):
     print()
     
     while kondisi:
+        hapus_item = input('Hapus item nomor (kosong untuk kembali): ')
+
+        if hapus_item.strip() == '':
+            print('\nTidak ada barang yang dihapus. Kembali ke menu.')
+            input('\nTekan enter untuk kembali')
+            return
+        
         try:
             hapus_item = int(input('Hapus item nomor : '))
             
@@ -1230,6 +1243,7 @@ def edit_stok(user):
             index_ubah = int(input('Ubah item nomor : '))
             
             if 1 <= index_ubah <= len(baca):
+
                 kondisi = False
             else:
                 print('Masukkan nomor barang yang sudah ada di atas!')
@@ -1255,6 +1269,33 @@ def edit_stok(user):
     print(f'\nStok barang {barang_dipilih['barang']} berhasil diubah menjadi {stok_baru}.')
     
     i = input('\nTekan enter untuk kembali')
+
+def tampilkan_histori(user):
+    sub_folder = os.path.join('data_toko', f'toko_{user}')
+    histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
+
+    # Pastikan file histori ada
+    if not os.path.exists(histori_file):
+        print("File histori belum dibuat.")
+        return
+
+    # Baca file histori
+    histori_df = pd.read_csv(histori_file)
+
+    print('╔' + '═' * 50 + '╗')
+    print('║' + 'Histori Penjualan'.center(50) + '║')
+    print('╚' + '═' * 50 + '╝')
+
+    if histori_df.empty:
+        print("Tidak ada histori penjualan.")
+        return
+
+    # Tampilkan histori
+    for index, row in histori_df.iterrows():
+        print(f"{index + 1}. Barang: {row['barang']}, Terjual: {row['terjual']}")
+    print()
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<BAGIAN PEMBELI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 keranjang = []
 
@@ -1412,7 +1453,7 @@ def checkout(total_harga):
         # Validasi struktur data item
         if not all(key in item for key in ['barang', 'harga', 'jumlah', 'toko']):
             continue
-    
+
     print('-' * 78)
     print(f'Total Belanja: Rp{total_harga:,}')
     print('\nTerima kasih telah berbelanja!')
@@ -1420,7 +1461,7 @@ def checkout(total_harga):
     # Kosongkan keranjang
     keranjang.clear()
     input('\nTekan enter untuk kembali ke menu utama')
-    
+
 def hapus_keranjang_belanja():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
@@ -1484,12 +1525,11 @@ def ubah_jumlah_barang():
     
     input('\nTekan enter untuk checkout')
     tampilkan_keranjang()
-    
       
 #PROGRAM UTAMA
 def main():
     os.system('cls')
-    
+
     cek_data()
     
     kondisi = True
