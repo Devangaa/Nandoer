@@ -7,7 +7,7 @@ FILE_USER = 'data_user.csv'
 folder_toko = 'data_toko'
 folder_pembeli = 'data_pembeli'
 
-#UNTUK PROGRAM UTAMA
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<UNTUK PROGRAM UTAMA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def cek_data():
     if not os.path.exists(FILE_USER):  
         user = pd.DataFrame(columns=['username', 'password', 'email', 'role', 'id']) 
@@ -20,7 +20,7 @@ def cek_data():
     if not os.path.exists(folder_pembeli):
         os.makedirs(folder_pembeli)
 
-#UNTUK REGISTRASI
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<UNTUK REGISTRASI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def cek_email(email):
     if '@' not in email or '.' not in email:
         return False
@@ -63,7 +63,7 @@ def bikin_id(username):
     
     return f'{str(id_jadi)}'
 
-#MENU AWAL
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU AWAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def register():
     os.system('cls')
         
@@ -262,7 +262,7 @@ def login():
     else:
         print('Masukan anda salah, anda akan dikembalikan ke menu awal')
 
-#MENU SETELAH LOGIN
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU ADMIN>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def menu_admin(user):
     kondisi = True
     
@@ -832,7 +832,26 @@ def hapus_akun_buyer():
     print(f'\nTelah menghapus profil pengguna #{id_tanya}')
     
     i = input('\nKetik enter untuk kembali')
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FITUR PROFIL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+def profil(index):
+    os.system('cls')
     
+    baca = pd.read_csv(FILE_USER)
+    
+    user = baca.at[index, 'username']
+    email = baca.at[index, 'email']
+    role = baca.at[index, 'role']
+    
+    print('╔' + '═'*48 + '╗')
+    print('║' + 'Profil Akun'.center(48) + '║')
+    print('╚' + '═'*48 + '╝')
+    
+    print(f'\nUsername : {user}\nEmail : {email}\nPeran : {role}')
+    
+    i = input('\nKetik apa saja untuk kembali')
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU PENJUAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def menu_penjual(email):
     baca = pd.read_csv(FILE_USER)
     
@@ -873,88 +892,8 @@ def menu_penjual(email):
                     kondisi = False
                 else:
                     print('\nMasukkan input yang benar!')
-    
-def menu_pembeli(email):
-    baca = pd.read_csv(FILE_USER)
-    
-    kondisi = True
-    
-    index = baca[baca['email'] == email].index[0]
-    user = baca.at[index, 'username']
-    
-    while kondisi:
-        os.system('cls')
-        
-        print('╔' + '═'*48 + '╗')
-        print('║' + 'Menu Pembeli'.center(48) + '║')
-        print('╠' + '═'*48 + '╣')
-        print('║' + user.center(48) + '║')
-        print('╚' + '═'*48 + '╝')
-        
-        print('\n1. Profil akun\n2. Beli barang\n3. Histori pembelian\n4. Keluar akun')
-        
-        pilihan = input('\nGunakan menu nomor : ')
-        
-        if not pilihan:  # Jika input kosong
-            print("Kembali ke menu sebelumnya...")
-            continue
-        
-        if pilihan == '1':
-            profil(index)
-        elif pilihan == '2':
-            menu_belibarang()
-        elif pilihan == '3':
-            tampilkan_riwayat_belanja(user)
-        elif pilihan == '4':
-            kondisi = False
-        else:
-            print('Masukkan input yang benar!')
 
-
-def menu_belibarang():
-    while True:
-        os.system('cls')
-        print('╔' + '═'*48 + '╗')
-        print('║' + 'Menu Beli Barang'.center(48) + '║')
-        print('╚' + '═'*48 + '╝')
-        
-        print('\n1. Daftar Toko\n2. Keranjang Belanja\n3. Kembali')
-        
-        pilihan = input('\nGunakan menu nomor : ')
-        
-        if not pilihan:  # Jika input kosong
-            print("Kembali ke menu sebelumnya...")
-            break
-        
-        if pilihan == '1':    
-            daftar_toko()
-        elif pilihan == '2':
-            tampilkan_keranjang()
-        elif pilihan == '3':
-            break  # Langsung keluar dari menu beli barang
-        else:
-            print('Masukkan input yang benar!')
-
-            
-#FITUR PROFIL        
-def profil(index):
-    os.system('cls')
-    
-    baca = pd.read_csv(FILE_USER)
-    
-    user = baca.at[index, 'username']
-    email = baca.at[index, 'email']
-    role = baca.at[index, 'role']
-    
-    print('╔' + '═'*48 + '╗')
-    print('║' + 'Profil Akun'.center(48) + '║')
-    print('╚' + '═'*48 + '╝')
-    
-    print(f'\nUsername : {user}\nEmail : {email}\nPeran : {role}')
-    
-    i = input('\nKetik apa saja untuk kembali')
-
-#FITUR PENJUAL
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FITUR ISI DARI MENU EDIT BARANG PENJUAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def edit_barang_penjual(user):    
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     
@@ -1008,7 +947,8 @@ def edit_barang_penjual(user):
                 else:
                     print('Masukkan input yang benar!')
 
-#FITUR EDIT BARANG
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FITUR EDIT BARANG>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#FITUR LIHAT LIST BARANG
 def list_barang(user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
@@ -1039,6 +979,7 @@ def list_barang(user):
     
     i = input('\nTekan enter untuk kembali')
 
+#FITUR TAMBAH BARANG
 def tambah_barang (user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
@@ -1088,7 +1029,8 @@ def tambah_barang (user):
     print(f'\n{barang} telah ditambahkan dengan harga : {harga} dan stok : {stok}')
     
     i = input('\nTekan enter untuk kembali')
-    
+
+#FITUR HAPUS BARANG    
 def hapus_barang(user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
@@ -1144,6 +1086,7 @@ def hapus_barang(user):
 
     i = input('\nTekan enter untuk kembali')
     
+#FITUR EDIT HARGA BARANG
 def edit_harga(user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
@@ -1205,6 +1148,7 @@ def edit_harga(user):
     
     i = input('\nTekan enter untuk kembali')
     
+#FITUR EDIT STOK BARANG
 def edit_stok(user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
@@ -1292,11 +1236,72 @@ def tampilkan_histori(user):
         print(f"{index + 1}. Barang: {row['barang']}, Terjual: {row['terjual']}")
     print()
 
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<BAGIAN PEMBELI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU PEMBELI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+def menu_pembeli(email):
+    baca = pd.read_csv(FILE_USER)
+    
+    kondisi = True
+    
+    index = baca[baca['email'] == email].index[0]
+    user = baca.at[index, 'username']
+    
+    while kondisi:
+        os.system('cls')
+        
+        print('╔' + '═'*48 + '╗')
+        print('║' + 'Menu Pembeli'.center(48) + '║')
+        print('╠' + '═'*48 + '╣')
+        print('║' + user.center(48) + '║')
+        print('╚' + '═'*48 + '╝')
+        
+        print('\n1. Profil akun\n2. Beli barang\n3. Histori pembelian\n4. Keluar akun')
+        
+        pilihan = input('\nGunakan menu nomor : ')
+        
+        if not pilihan:  # Jika input kosong
+            print("Kembali ke menu sebelumnya...")
+            continue
+        
+        if pilihan == '1':
+            profil(index)
+        elif pilihan == '2':
+            menu_belibarang()
+        elif pilihan == '3':
+            tampilkan_riwayat_belanja(user)
+        elif pilihan == '4':
+            kondisi = False
+        else:
+            print('Masukkan input yang benar!')
+
+#FITUR ISI DARI MENU BELI BARANG
+def menu_belibarang():
+    while True:
+        os.system('cls')
+        print('╔' + '═'*48 + '╗')
+        print('║' + 'Menu Beli Barang'.center(48) + '║')
+        print('╚' + '═'*48 + '╝')
+        
+        print('\n1. Daftar Toko\n2. Keranjang Belanja\n3. Kembali')
+        
+        pilihan = input('\nGunakan menu nomor : ')
+        
+        if not pilihan:  # Jika input kosong
+            print("Kembali ke menu sebelumnya...")
+            break
+        
+        if pilihan == '1':    
+            daftar_toko()
+        elif pilihan == '2':
+            tampilkan_keranjang()
+        elif pilihan == '3':
+            break  # Langsung keluar dari menu beli barang
+        else:
+            print('Masukkan input yang benar!')
+
 keranjang = []
 riwayat_belanja = []
 
-# Fungsi untuk menampilkan daftar toko
+# FITUR DAFTAR TOKO
 def daftar_toko():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
@@ -1328,7 +1333,7 @@ def daftar_toko():
     
     i = input('\nTekan enter untuk kembali')
 
-# Fungsi untuk menampilkan daftar barang dari toko yang dipilih
+# FITUR DAFTAR BARANG (setelah daftar toko)
 def daftar_barang(nama_toko):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
@@ -1395,6 +1400,7 @@ def daftar_barang(nama_toko):
             print('Masukkan angka yang valid!')
             return
 
+#FITUR KERANJANG BELANJA
 def tampilkan_keranjang():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
@@ -1434,7 +1440,7 @@ def tampilkan_keranjang():
             input('\nTekan enter untuk kembali')
             
 
-# Fungsi untuk checkout barang dan cetak nota
+# FITUR CHECKOUT DAN NOTA
 def checkout(total_harga):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
@@ -1477,30 +1483,7 @@ def checkout(total_harga):
     keranjang.clear()
     input('\nTekan enter untuk kembali ke menu utama')
 
-def tampilkan_riwayat_belanja(user):
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print('╔' + '═' * 48 + '╗')
-    print('║' + 'Riwayat Belanja'.center(48) + '║')
-    print('╠' + '═'*48 + '╣')
-    print('║ Pembeli: {}'.format(user).ljust(48) + '║')
-    print('╚' + '═' * 48 + '╝')
-    print()
-
-    if not riwayat_belanja:
-        print('Belum ada riwayat belanja.')
-    else:
-        for i, transaksi in enumerate(riwayat_belanja, start=1):
-            print(f'Transaksi #{i}')
-            print(f'{"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
-            print('-' * 78)
-            for item in transaksi['item']:
-                print(f'{item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{item["subtotal"]:<12}')
-            print('-' * 78)
-            print(f'Total Belanja: Rp{transaksi["total"]:,}')
-            print()
-
-    input('\nTekan enter untuk kembali ke menu utama')
-
+#FITUR TIDAK JADI CHECKOUT
 def hapus_keranjang_belanja():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
@@ -1535,6 +1518,7 @@ def hapus_keranjang_belanja():
     except ValueError:
         print('Apakah anda ingin mengubah jumlah barang?')
 
+#FITUR TIDAK JADI CHECKOUT
 def ubah_jumlah_barang():    
     try:
         pilihan = int(input("\nMasukkan nomor barang yang ingin diubah (enter untuk kembali): "))
@@ -1564,8 +1548,32 @@ def ubah_jumlah_barang():
     
     input('\nTekan enter untuk checkout')
     tampilkan_keranjang()
+
+def tampilkan_riwayat_belanja(user):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('╔' + '═' * 48 + '╗')
+    print('║' + 'Riwayat Belanja'.center(48) + '║')
+    print('╠' + '═'*48 + '╣')
+    print('║ Pembeli: {}'.format(user).ljust(48) + '║')
+    print('╚' + '═' * 48 + '╝')
+    print()
+
+    if not riwayat_belanja:
+        print('Belum ada riwayat belanja.')
+    else:
+        for i, transaksi in enumerate(riwayat_belanja, start=1):
+            print(f'Transaksi #{i}')
+            print(f'{"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
+            print('-' * 78)
+            for item in transaksi['item']:
+                print(f'{item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{item["subtotal"]:<12}')
+            print('-' * 78)
+            print(f'Total Belanja: Rp{transaksi["total"]:,}')
+            print()
+
+    input('\nTekan enter untuk kembali ke menu utama')
       
-#PROGRAM UTAMA
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<PROGRAM UTAMA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def main():
     os.system('cls')
 
