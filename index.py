@@ -63,6 +63,18 @@ def bikin_id(username):
     
     return f'{str(id_jadi)}'
 
+def ambil_nama_toko_dari_email(email):
+    """
+    Fungsi simulasi untuk mendapatkan nama toko berdasarkan email penjual.
+    Ganti dengan logika database jika diperlukan.
+    """
+    # Simulasi data email dan toko
+    mapping_toko = {
+        "penjual1@example.com": "Toko_A",
+        "penjual2@example.com": "Toko_B",
+    }
+    return mapping_toko.get(email)
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU AWAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def register():
     os.system('cls')
@@ -221,10 +233,11 @@ def login():
 
             email = input('\nMasukkan email : ')
             password = input('Masukkan password : ')
+            toko = ambil_nama_toko_dari_email(email)
 
             user = seller[(seller['email'] == email) & (seller['password'] == password) & (seller['role'] == 'seller')]
             if not user.empty:
-                menu_penjual(email)
+                menu_penjual(email, toko)
                 i+=3
             else:
                 print('\nLogin gagal! email atau password salah.')
@@ -289,6 +302,7 @@ def menu_admin(user):
                 edit_akun_buyer()
                 kondisi2 = False
             elif pilihan == '3':
+                pilih_pembeli_dan_hitung()
                 kondisi2 = False
             elif pilihan == '4':
                 kondisi2 = False
@@ -396,13 +410,13 @@ def ubah_akun_seller():
         return
     
     print('═'*82)
-    print(f'{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}')
+    print(f"{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}")
     print('═'*82)
     
     idx = 1
     
     for index, row in seller.iterrows():
-        print(f'{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}')
+        print(f"{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}")
         idx += 1
     
     print('═'*82)
@@ -482,13 +496,13 @@ def lihat_akun_seller():
         return
     
     print('═'*82)
-    print(f'{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}')
+    print(f"{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}")
     print('═'*82)
     
     idx = 1
     
     for index, row in seller.iterrows():
-        print(f'{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}')
+        print(f"{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}")
         idx += 1
         
     print('═'*82)
@@ -514,13 +528,13 @@ def hapus_akun_seller():
         return
     
     print('═'*82)
-    print(f'{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}')
+    print(f"{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}")
     print('═'*82)
     
     idx = 1
     
     for index, row in seller.iterrows():
-        print(f'{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}')
+        print(f"{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}")
         idx += 1
         
     print('═'*82)
@@ -664,13 +678,13 @@ def ubah_akun_buyer():
         return
     
     print('═'*82)
-    print(f'{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}')
+    print(f"{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}")
     print('═'*82)
     
     idx = 1
     
     for index, row in buyer.iterrows():
-        print(f'{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}')
+        print(f"{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}")
         idx += 1
     
     print('═'*82)
@@ -750,13 +764,13 @@ def lihat_akun_buyer():
         return
     
     print('═'*82)
-    print(f'{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}')
+    print(f"{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}")
     print('═'*82)
     
     idx = 1
     
     for index, row in buyer.iterrows():
-        print(f'{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}')
+        print(f"{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}")
         idx += 1
         
     print('═'*82)
@@ -782,13 +796,13 @@ def hapus_akun_buyer():
         return
     
     print('═'*82)
-    print(f'{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}')
+    print(f"{'Index':<7} | {'Username':<15} | {'Email':<25} | {'Password':<15} | {'ID':<10}")
     print('═'*82)
     
     idx = 1
     
     for index, row in buyer.iterrows():
-        print(f'{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}')
+        print(f"{idx:<7} | {row['username']:<15} | {row['email']:<25} | {row['password']:<15} | {row['id']:<10}")
         idx += 1
         
     print('═'*82)
@@ -833,6 +847,93 @@ def hapus_akun_buyer():
     
     i = input('\nKetik enter untuk kembali')
 
+def get_user_by_role(role):
+    # Path ke file data_user.csv
+    file_user = 'data_user.csv'
+    
+    if not os.path.exists(file_user):
+        print(f"File {file_user} tidak ditemukan.")
+        return None
+    
+    try:
+        # Membaca file CSV
+        df_user = pd.read_csv(file_user)
+    except Exception as e:
+        print(f"Error membaca file data_user.csv: {e}")
+        return None
+    
+    # Memastikan ada kolom 'username' dan 'role' di file CSV
+    if 'username' not in df_user.columns or 'role' not in df_user.columns:
+        print("File data_user.csv tidak memiliki kolom yang diperlukan: 'username' dan 'role'.")
+        return None
+    
+    # Menyaring pengguna dengan role 'buyer'
+    buyer_users = df_user[df_user['role'] == role]['username'].tolist()
+    
+    if not buyer_users:
+        print(f"Tidak ada pengguna dengan role {role}.")
+        return None
+    
+    return buyer_users
+    
+def hitung_total_penjualan_dan_biaya_admin(folder_pembeli, buyer_users):
+    sub_folder = os.path.join(folder_pembeli, f'{buyer_users}')
+    histori_file = os.path.join(sub_folder, f'histori_{buyer_users}.csv')
+    
+    if not os.path.exists(histori_file):
+        print(f"File histori untuk {buyer_users} tidak ditemukan.")
+        return
+    
+    try:
+        df = pd.read_csv(histori_file)
+    except Exception as e:
+        print(f"Error membaca file CSV: {e}")
+        return
+
+    required_columns = {'harga', 'jumlah'}
+    if not required_columns.issubset(df.columns):
+        print(f"File CSV tidak memiliki kolom yang diperlukan: {required_columns}")
+        return
+
+    df['total_harga'] = df['harga'] * df['jumlah']
+    df['biaya_admin'] = df['total_harga'] * 0.08  # Biaya admin 8% dari total harga
+
+    total_penjualan = df['total_harga'].sum()
+    total_biaya_admin = df['biaya_admin'].sum()
+
+    print(f"Total Penjualan: {total_penjualan}")
+    print(f"Total Biaya Admin: {total_biaya_admin}")
+
+    total_penjualan_file = os.path.join(sub_folder, f'total_penjualan_{buyer_users}.txt')
+    try:
+        with open(total_penjualan_file, 'w') as f:
+            f.write(f"Total Penjualan: {total_penjualan}\n")
+            f.write(f"Total Biaya Admin: {total_biaya_admin}\n")
+    except Exception as e:
+        print(f"Error menyimpan file: {e}")
+        return
+
+def pilih_pembeli_dan_hitung():
+    buyer_users = get_user_by_role('buyer')  # Mendapatkan daftar pembeli
+    if buyer_users:
+        # Pilih salah satu pengguna dari daftar
+        print("Daftar pembeli yang tersedia:")
+        for idx, user in enumerate(buyer_users, 1):
+            print(f"{idx}. {user}")
+        
+        pilihan_user = int(input("\nPilih pembeli (nomor): ")) - 1
+        if 0 <= pilihan_user < len(buyer_users):
+            user = buyer_users[pilihan_user]  # Pilih pengguna
+            folder_pembeli = 'data_pembeli'  # Folder pembeli
+            hitung_total_penjualan_dan_biaya_admin(folder_pembeli, user)  # Memanggil fungsi perhitungan
+        else:
+            print("Pilihan tidak valid.")
+    else:
+        print("Tidak ada pembeli terdaftar.")
+    
+    input("Tekan Enter untuk kembali ke menu...")  # Menunggu input agar tidak langsung kembali
+
+    
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FITUR PROFIL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def profil(index):
     os.system('cls')
@@ -852,7 +953,7 @@ def profil(index):
     i = input('\nKetik apa saja untuk kembali')
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU PENJUAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-def menu_penjual(email):
+def menu_penjual(email, toko):
     baca = pd.read_csv(FILE_USER)
     
     kondisi = True
@@ -883,7 +984,7 @@ def menu_penjual(email):
                     edit_barang_penjual(user)
                     kondisi2 = False
                 elif pilihan == '3':
-                    tampilkan_histori_penjualan(user)
+                    tampilkan_histori_penjualan(toko)
                     kondisi2 = False
                 elif pilihan == '4':
                     kondisi2 = False
@@ -1206,21 +1307,59 @@ def edit_stok(user):
     print(f'\nStok barang {barang_dipilih['barang']} berhasil diubah menjadi {stok_baru}.')
     
     i = input('\nTekan enter untuk kembali')
+    
+def tampilkan_histori_penjualan(toko):
+    folder_toko = 'data_toko'
+    sub_folder = os.path.join(folder_toko, f'{toko}')
+    file_histori = os.path.join(sub_folder, f'histori_{toko}.csv')
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('╔' + '═' * 50 + '╗')
+    print('║' + 'Histori Penjualan'.center(50) + '║')
+    print('╚' + '═' * 50 + '╝')
 
-def perbarui_histori_penjualan(user, riwayat_belanja):
+    # Periksa apakah file histori penjualan ada
+    if not os.path.exists(file_histori):
+        print(f"Belum ada histori penjualan untuk toko {toko}.")
+        input("\nTekan enter untuk kembali.")
+        return
+
+    # Baca file histori penjualan
+    try:
+        histori_df = pd.read_csv(file_histori)
+    except Exception as e:
+        print(f"Terjadi kesalahan saat membaca file histori: {e}")
+        input("\nTekan enter untuk kembali.")
+        return
+
+    # Tampilkan histori jika tidak kosong
+    if histori_df.empty:
+        print("Tidak ada histori penjualan.")
+    else:
+        print(f"\nHistori penjualan untuk toko {toko}:")
+        print(f"{'No':<5} {'Barang':<30} {'Terjual':<10}")
+        print('-' * 50)
+        for index, row in histori_df.iterrows():
+            print(f"{index + 1:<5} {row['barang']:<30} {row['terjual']:<10}")
+
+    perbarui_histori_penjualan(riwayat_belanja)
+
+    input("\nTekan enter untuk kembali.")
+
+def perbarui_histori_penjualan(riwayat_belanja):
     for transaksi in riwayat_belanja:
         for item in transaksi['item']:
             # Ambil informasi barang, toko, dan jumlah terjual
+            toko = item['toko']
             nama_barang = item['barang']
             jumlah_terjual = item['jumlah']
 
-            sub_folder = os.path.join('data_toko', f'{user}')
+            sub_folder = os.path.join('data_toko', f'{toko}')
             
             # Periksa apakah folder sudah ada, jika tidak, buat folder
             if not os.path.exists(sub_folder):
                 os.makedirs(sub_folder)
             
-            file_histori = os.path.join(sub_folder, f'histori_{user}.csv')
+            file_histori = os.path.join(sub_folder, f'histori_{toko}.csv')
 
             # Jika file histori belum ada, buat dengan kolom default
             if not os.path.exists(file_histori):
@@ -1238,44 +1377,6 @@ def perbarui_histori_penjualan(user, riwayat_belanja):
 
             # Simpan kembali ke file
             histori_df.to_csv(file_histori, index=False)
-
-
-def tampilkan_histori_penjualan(user):
-    folder_toko = 'data_toko'
-    sub_folder = os.path.join(folder_toko, f'{user}')
-    file_histori = os.path.join(sub_folder, f'histori_{user}.csv')
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print('╔' + '═' * 50 + '╗')
-    print('║' + 'Histori Penjualan'.center(50) + '║')
-    print('╚' + '═' * 50 + '╝')
-
-    # Periksa apakah file histori penjualan ada
-    if not os.path.exists(file_histori):
-        print(f"Belum ada histori penjualan untuk toko {user}.")
-        input("\nTekan enter untuk kembali.")
-        return
-
-    # Baca file histori penjualan
-    try:
-        histori_df = pd.read_csv(file_histori)
-    except Exception as e:
-        print(f"Terjadi kesalahan saat membaca file histori: {e}")
-        input("\nTekan enter untuk kembali.")
-        return
-
-    # Tampilkan histori jika tidak kosong
-    if histori_df.empty:
-        print("Tidak ada histori penjualan.")
-    else:
-        print(f"\nHistori penjualan untuk toko {user}:")
-        print(f"{'No':<5} {'Barang':<30} {'Terjual':<10}")
-        print('-' * 50)
-        for index, row in histori_df.iterrows():
-            print(f"{index + 1:<5} {row['barang']:<30} {row['terjual']:<10}")
-
-    perbarui_histori_penjualan(riwayat_belanja)
-
-    input("\nTekan enter untuk kembali.")
 
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU PEMBELI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1566,7 +1667,7 @@ def ubah_jumlah_barang():
         pilihan = int(input("\nMasukkan nomor barang yang ingin diubah (enter untuk kembali): "))
         if 1 <= pilihan <= len(keranjang):
             item = keranjang[pilihan - 1]
-            file_barang = os.path.join(folder_toko, item['toko'], f'{item["toko"]}.csv')
+            file_barang = os.path.join(folder_toko, item['toko'], f'{item['toko']}.csv')
 
             # Ambil stok maksimum dari file toko
             baca = pd.read_csv(file_barang)
@@ -1580,7 +1681,7 @@ def ubah_jumlah_barang():
                 baca.to_csv(file_barang, index=False)
                 # Update keranjang
                 item['jumlah'] = jumlah_baru
-                print(f"Jumlah {item['barang']} dari {item["toko"]} telah diperbarui menjadi {jumlah_baru}.")
+                print(f"Jumlah {item['barang']} dari {item['toko']} telah diperbarui menjadi {jumlah_baru}.")
             else:
                 print("Jumlah yang dimasukkan tidak valid.")
         else:
@@ -1671,7 +1772,7 @@ def tampilkan_riwayat_belanja(user, riwayat_belanja):
             print()
     
     simpan_riwayat_belanja(user, riwayat_belanja)
-    perbarui_histori_penjualan(user, riwayat_belanja)
+    perbarui_histori_penjualan(riwayat_belanja)
 
     input('\nTekan enter untuk kembali ke menu utama')
 
