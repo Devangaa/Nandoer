@@ -883,7 +883,7 @@ def menu_penjual(email):
                     edit_barang_penjual(user)
                     kondisi2 = False
                 elif pilihan == '3':
-                    tampilkan_histori(user)
+                    tampilkan_histori_penjualan(user)
                     kondisi2 = False
                 elif pilihan == '4':
                     kondisi2 = False
@@ -901,14 +901,10 @@ def edit_barang_penjual(user):
         os.makedirs(sub_folder)
     
     barang = os.path.join(sub_folder, f'toko_{user}.csv')
-    histori = os.path.join(sub_folder, f'histori_{user}.csv')
     
     if not os.path.exists(barang):  
         user_df = pd.DataFrame(columns=['barang', 'harga', 'stok']) 
         user_df.to_csv(barang, index=False)
-    if not os.path.exists(histori):  
-        user_df = pd.DataFrame(columns=['barang', 'terjual']) 
-        user_df.to_csv(histori, index=False) 
         
     kondisi = True
 
@@ -1211,30 +1207,76 @@ def edit_stok(user):
     
     i = input('\nTekan enter untuk kembali')
 
-def tampilkan_histori(user):
-    sub_folder = os.path.join('data_toko', f'toko_{user}')
-    histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
+def perbarui_histori_penjualan(user, riwayat_belanja):
+    for transaksi in riwayat_belanja:
+        for item in transaksi['item']:
+            # Ambil informasi barang, toko, dan jumlah terjual
+            nama_barang = item['barang']
+            jumlah_terjual = item['jumlah']
 
-    # Pastikan file histori ada
-    if not os.path.exists(histori_file):
-        print("File histori belum dibuat.")
-        return
+            sub_folder = os.path.join('data_toko', f'{user}')
+            
+            # Periksa apakah folder sudah ada, jika tidak, buat folder
+            if not os.path.exists(sub_folder):
+                os.makedirs(sub_folder)
+            
+            file_histori = os.path.join(sub_folder, f'histori_{user}.csv')
 
-    # Baca file histori
-    histori_df = pd.read_csv(histori_file)
+            # Jika file histori belum ada, buat dengan kolom default
+            if not os.path.exists(file_histori):
+                histori_df = pd.DataFrame(columns=['barang', 'terjual'])
+                histori_df.to_csv(file_histori, index=False)
+            else:
+                histori_df = pd.read_csv(file_histori)
 
+            # Perbarui data histori
+            if nama_barang in histori_df['barang'].values:
+                histori_df.loc[histori_df['barang'] == nama_barang, 'terjual'] += jumlah_terjual
+            else:
+                new_row = {'barang': nama_barang, 'terjual': jumlah_terjual}
+                histori_df = pd.concat([histori_df, pd.DataFrame([new_row])], ignore_index=True)
+
+            # Simpan kembali ke file
+            histori_df.to_csv(file_histori, index=False)
+
+
+def tampilkan_histori_penjualan(user):
+    folder_toko = 'data_toko'
+    sub_folder = os.path.join(folder_toko, f'{user}')
+    file_histori = os.path.join(sub_folder, f'histori_{user}.csv')
+    os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 50 + '╗')
     print('║' + 'Histori Penjualan'.center(50) + '║')
     print('╚' + '═' * 50 + '╝')
 
-    if histori_df.empty:
-        print("Tidak ada histori penjualan.")
+    # Periksa apakah file histori penjualan ada
+    if not os.path.exists(file_histori):
+        print(f"Belum ada histori penjualan untuk toko {user}.")
+        input("\nTekan enter untuk kembali.")
         return
 
-    # Tampilkan histori
-    for index, row in histori_df.iterrows():
-        print(f"{index + 1}. Barang: {row['barang']}, Terjual: {row['terjual']}")
-    print()
+    # Baca file histori penjualan
+    try:
+        histori_df = pd.read_csv(file_histori)
+    except Exception as e:
+        print(f"Terjadi kesalahan saat membaca file histori: {e}")
+        input("\nTekan enter untuk kembali.")
+        return
+
+    # Tampilkan histori jika tidak kosong
+    if histori_df.empty:
+        print("Tidak ada histori penjualan.")
+    else:
+        print(f"\nHistori penjualan untuk toko {user}:")
+        print(f"{'No':<5} {'Barang':<30} {'Terjual':<10}")
+        print('-' * 50)
+        for index, row in histori_df.iterrows():
+            print(f"{index + 1:<5} {row['barang']:<30} {row['terjual']:<10}")
+
+    perbarui_histori_penjualan(riwayat_belanja)
+
+    input("\nTekan enter untuk kembali.")
+
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU PEMBELI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def menu_pembeli(email):
@@ -1267,7 +1309,7 @@ def menu_pembeli(email):
         elif pilihan == '2':
             menu_belibarang()
         elif pilihan == '3':
-            tampilkan_riwayat_belanja(user)
+            tampilkan_riwayat_belanja(user, riwayat_belanja)
         elif pilihan == '4':
             kondisi = False
         else:
@@ -1549,20 +1591,77 @@ def ubah_jumlah_barang():
     input('\nTekan enter untuk checkout')
     tampilkan_keranjang()
 
-def tampilkan_riwayat_belanja(user):
+def simpan_riwayat_belanja(user, riwayat_belanja):
+    folder_pembeli = 'data_pembeli'
+    sub_folder = os.path.join(folder_pembeli, f'{user}')
+
+    # Buat folder jika belum ada
+    if not os.path.exists(folder_pembeli):
+        os.makedirs(folder_pembeli)
+    if not os.path.exists(sub_folder):
+        os.makedirs(sub_folder)
+
+    # Tentukan path file CSV untuk menyimpan riwayat
+    histori = os.path.join(sub_folder, f'histori_{user}.csv')
+
+    # Siapkan data untuk disimpan ke CSV
+    data = []
+    for transaksi in riwayat_belanja:
+        tanggal_transaksi = transaksi.get('tanggal', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        for item in transaksi['item']:
+            data.append({
+                'tanggal': tanggal_transaksi,
+                'barang': item['barang'],
+                'toko': item['toko'],
+                'jumlah': item['jumlah'],
+                'harga': item['harga'],
+                'subtotal': item['subtotal'],
+                'total': transaksi['total']
+            })
+
+    # Jika file riwayat belum ada, buat file baru
+    if not os.path.exists(histori):
+        user_df = pd.DataFrame(data)
+        user_df.to_csv(histori, index=False)
+    else:
+        user_df = pd.DataFrame(data)
+        user_df.to_csv(histori, mode='a', header=False, index=False)
+
+def tampilkan_riwayat_belanja(user, riwayat_belanja):
+    folder_pembeli = 'data_pembeli'
+    sub_folder = os.path.join(folder_pembeli, f'{user}')
+    histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Riwayat Belanja'.center(48) + '║')
-    print('╠' + '═'*48 + '╣')
-    print('║ Pembeli: {}'.format(user).ljust(48) + '║')
+    print('╠' + '═' * 48 + '╣')
+    print('║' + 'Pembeli: {}'.format(user).center(48) + '║')
     print('╚' + '═' * 48 + '╝')
     print()
+
+    if not os.path.exists(histori_file):
+        print('Belum ada riwayat belanja.')
+        input('\nTekan enter untuk kembali ke menu utama')
+        return
+
+    # Baca file riwayat belanja
+    try:
+        histori_df = pd.read_csv(histori_file)
+    except Exception as e:
+        print(f"Terjadi kesalahan saat membaca file riwayat: {e}")
+        input('\nTekan enter untuk kembali ke menu utama')
+        return
+
+    # Tampilkan seluruh riwayat belanja
+    if histori_df.empty:
+        print('Belum ada riwayat belanja.')
 
     if not riwayat_belanja:
         print('Belum ada riwayat belanja.')
     else:
         for i, transaksi in enumerate(riwayat_belanja, start=1):
-            print(f'Transaksi #{i}')
+            tanggal_transaksi = transaksi.get('tanggal', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))  # Tampilkan tanggal jika ada
+            print(f'Transaksi #{i} - {tanggal_transaksi}')
             print(f'{"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
             print('-' * 78)
             for item in transaksi['item']:
@@ -1570,9 +1669,12 @@ def tampilkan_riwayat_belanja(user):
             print('-' * 78)
             print(f'Total Belanja: Rp{transaksi["total"]:,}')
             print()
+    
+    simpan_riwayat_belanja(user, riwayat_belanja)
+    perbarui_histori_penjualan(user, riwayat_belanja)
 
     input('\nTekan enter untuk kembali ke menu utama')
-      
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<PROGRAM UTAMA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def main():
     os.system('cls')
