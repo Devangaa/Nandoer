@@ -864,6 +864,7 @@ def menu_penjual(email):
                     edit_barang_penjual(user)
                     kondisi2 = False
                 elif pilihan == '3':
+                    tampilkan_histori(user)
                     kondisi2 = False
                 elif pilihan == '4':
                     kondisi2 = False
@@ -922,22 +923,18 @@ def menu_belibarang():
         
         print('\n1. Daftar Toko\n2. Keranjang Belanja\n3. Kembali')
         
-        pilih2 = True
-            
-        while pilih2:
-                pilihan = input('\nGunakan menu nomor : ')
-                
-                if pilihan == '1':    
-                    daftar_toko()
-                    pilih2 = False
-                elif pilihan == '2':
-                    tampilkan_keranjang()
-                    pilih2 = False
-                elif pilihan == '3':
-                    pilih2 = False
-                    pilih = False
-                else:
-                    print('Masukkan input yang benar!')
+        pilihan = input('\nGunakan menu nomor : ')
+        
+        if pilihan == '1':    
+            daftar_toko()
+            pilih = False
+        elif pilihan == '2':
+            tampilkan_keranjang()
+            pilih = False
+        elif pilihan == '3':
+            pilih = False
+        else:
+            print('Masukkan input yang benar!')
             
 #FITUR PROFIL        
 def profil(index):
@@ -1270,6 +1267,30 @@ def edit_stok(user):
     
     i = input('\nTekan enter untuk kembali')
 
+def tampilkan_histori(user):
+    sub_folder = os.path.join('data_toko', f'toko_{user}')
+    histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
+
+    # Pastikan file histori ada
+    if not os.path.exists(histori_file):
+        print("File histori belum dibuat.")
+        return
+
+    # Baca file histori
+    histori_df = pd.read_csv(histori_file)
+
+    print('╔' + '═' * 50 + '╗')
+    print('║' + 'Histori Penjualan'.center(50) + '║')
+    print('╚' + '═' * 50 + '╝')
+
+    if histori_df.empty:
+        print("Tidak ada histori penjualan.")
+        return
+
+    # Tampilkan histori
+    for index, row in histori_df.iterrows():
+        print(f"{index + 1}. Barang: {row['barang']}, Terjual: {row['terjual']}")
+    print()
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<BAGIAN PEMBELI>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 keranjang = []
