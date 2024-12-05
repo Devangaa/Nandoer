@@ -10,7 +10,7 @@ folder_pembeli = 'data_pembeli'
 #UNTUK PROGRAM UTAMA
 def cek_data():
     if not os.path.exists(FILE_USER):  
-        user = pd.DataFrame(columns=['username', 'password', 'email', 'role']) 
+        user = pd.DataFrame(columns=['username', 'password', 'email', 'role', 'id']) 
         user.to_csv(FILE_USER, index=False) 
     if not os.path.exists(FILE_ADMIN):  
         user = pd.DataFrame(columns=['username', 'password']) 
