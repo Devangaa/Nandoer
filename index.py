@@ -893,29 +893,26 @@ def menu_pembeli(email):
         
         print('\n1. Profil akun\n2. Beli barang\n3. Histori pembelian\n4. Keluar akun')
         
-        kondisi2 = True
-            
-        while kondisi2:
-                pilihan = input('\nGunakan menu nomor : ')
-                
-                if pilihan == '1':
-                    profil(index)
-                    kondisi2 = False
-                elif pilihan == '2':
-                    menu_belibarang()
-                elif pilihan == '3':
-                    tampilkan_riwayat_belanja()
-                    kondisi2 = False
-                elif pilihan == '4':
-                    kondisi2 = False
-                    kondisi = False
-                else:
-                    print('Masukkan input yang benar!')
+        pilihan = input('\nGunakan menu nomor : ')
+        
+        if not pilihan:  # Jika input kosong
+            print("Kembali ke menu sebelumnya...")
+            continue
+        
+        if pilihan == '1':
+            profil(index)
+        elif pilihan == '2':
+            menu_belibarang()
+        elif pilihan == '3':
+            tampilkan_riwayat_belanja(user)
+        elif pilihan == '4':
+            kondisi = False
+        else:
+            print('Masukkan input yang benar!')
+
 
 def menu_belibarang():
-    pilih = True
-
-    while pilih:
+    while True:
         os.system('cls')
         print('╔' + '═'*48 + '╗')
         print('║' + 'Menu Beli Barang'.center(48) + '║')
@@ -925,16 +922,19 @@ def menu_belibarang():
         
         pilihan = input('\nGunakan menu nomor : ')
         
+        if not pilihan:  # Jika input kosong
+            print("Kembali ke menu sebelumnya...")
+            break
+        
         if pilihan == '1':    
             daftar_toko()
-            pilih = False
         elif pilihan == '2':
             tampilkan_keranjang()
-            pilih = False
         elif pilihan == '3':
-            pilih = False
+            break  # Langsung keluar dari menu beli barang
         else:
             print('Masukkan input yang benar!')
+
             
 #FITUR PROFIL        
 def profil(index):
@@ -1477,10 +1477,12 @@ def checkout(total_harga):
     keranjang.clear()
     input('\nTekan enter untuk kembali ke menu utama')
 
-def tampilkan_riwayat_belanja():
+def tampilkan_riwayat_belanja(user):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Riwayat Belanja'.center(48) + '║')
+    print('╠' + '═'*48 + '╣')
+    print('║ Pembeli: {}'.format(user).ljust(48) + '║')
     print('╚' + '═' * 48 + '╝')
     print()
 
