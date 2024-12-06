@@ -903,13 +903,19 @@ def hitung_total_penjualan_dan_biaya_admin(folder_pembeli, buyer_users):
     print(f"Total Penjualan: {total_penjualan}")
     print(f"Total Biaya Admin: {total_biaya_admin}")
 
-    total_penjualan_file = os.path.join(sub_folder, f'total_penjualan_{buyer_users}.txt')
+    # Buat DataFrame untuk menyimpan hasil
+    result_df = pd.DataFrame({
+        'Total Penjualan': [total_penjualan],
+        'Total Biaya Admin': [total_biaya_admin]
+    })
+
+    # Simpan ke file CSV
+    total_penjualan_file = os.path.join(sub_folder, f'total_penjualan_{buyer_users}.csv')
     try:
-        with open(total_penjualan_file, 'w') as f:
-            f.write(f"Total Penjualan: {total_penjualan}\n")
-            f.write(f"Total Biaya Admin: {total_biaya_admin}\n")
+        result_df.to_csv(total_penjualan_file, index=False)
+        print(f"Hasil perhitungan disimpan di: {total_penjualan_file}")
     except Exception as e:
-        print(f"Error menyimpan file: {e}")
+        print(f"Error menyimpan file CSV: {e}")
         return
 
 def pilih_pembeli_dan_hitung():
@@ -1304,7 +1310,7 @@ def edit_stok(user):
     print(f'\nStok barang {barang_dipilih['barang']} berhasil diubah menjadi {stok_baru}.')
     
     i = input('\nTekan enter untuk kembali')
-    
+
 def tampilkan_histori_penjualan(user):
     folder_toko = 'data_toko'
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
@@ -1323,26 +1329,42 @@ def tampilkan_histori_penjualan(user):
     # Baca file histori penjualan
     try:
         histori_df = pd.read_csv(file_histori)
+        # Bersihkan nama kolom
+        histori_df.columns = histori_df.columns.str.strip()
     except Exception as e:
         print(f"Terjadi kesalahan saat membaca file histori: {e}")
         input("\nTekan enter untuk kembali.")
         return
 
-    # Tampilkan histori jika tidak kosong
+    # Periksa apakah file CSV kosong
     if histori_df.empty:
-        print("Tidak ada histori penjualan.")
-    else:
-        print(f"\nHistori penjualan untuk toko {user}:")
-        print(f"{'No':<5} {'Barang':<30} {'Terjual':<10} {'Harga':<10}")
-        print('-' * 60)
-        for index, row in histori_df.iterrows():
-            print(f"{index + 1:<5} {row['barang']:<30} {row['terjual']:<10} {row['harga']:<10}")
+        print("File histori penjualan kosong.")
+        input("\nTekan enter untuk kembali.")
+        return
 
-    
+    # Periksa apakah kolom yang diperlukan ada
+    if 'harga' not in histori_df.columns or 'terjual' not in histori_df.columns:
+        print("File CSV tidak memiliki kolom 'harga' atau 'terjual'.")
+        print("Kolom yang ditemukan:", histori_df.columns)
+        input("\nTekan enter untuk kembali.")
+        return
 
-    perbarui_histori_penjualan(riwayat_belanja)
+    # Tampilkan histori
+    print(f"\nHistori penjualan untuk toko {user}:")
+    print(f"{'No':<5} {'Barang':<30} {'Terjual':<10} {'Harga':<10} {'Total Harga':<15}")
+    print('-' * 70)
+
+    total_penjualan = 0
+    for index, row in histori_df.iterrows():
+        total_harga = row['terjual'] * row['harga']
+        total_penjualan += total_harga
+        print(f"{index + 1:<5} {row['barang']:<30} {row['terjual']:<10} {row['harga']:<10} {total_harga:<15}")
+
+    print('-' * 70)
+    print(f"{'Total Penjualan:':<55} {total_penjualan:<15}")
 
     input("\nTekan enter untuk kembali.")
+
 
 def perbarui_histori_penjualan(riwayat_belanja):
     for transaksi in riwayat_belanja:
@@ -1351,6 +1373,7 @@ def perbarui_histori_penjualan(riwayat_belanja):
             toko = item['toko']
             nama_barang = item['barang']
             jumlah_terjual = item['jumlah']
+            harga_terjual = item['harga']
 
             sub_folder = os.path.join('data_toko', f'{toko}')
             
@@ -1362,7 +1385,7 @@ def perbarui_histori_penjualan(riwayat_belanja):
 
             # Jika file histori belum ada, buat dengan kolom default
             if not os.path.exists(file_histori):
-                histori_df = pd.DataFrame(columns=['barang', 'terjual'])
+                histori_df = pd.DataFrame(columns=['barang', 'terjual', 'harga'])
                 histori_df.to_csv(file_histori, index=False)
             else:
                 histori_df = pd.read_csv(file_histori)
@@ -1371,7 +1394,7 @@ def perbarui_histori_penjualan(riwayat_belanja):
             if nama_barang in histori_df['barang'].values:
                 histori_df.loc[histori_df['barang'] == nama_barang, 'terjual'] += jumlah_terjual
             else:
-                new_row = {'barang': nama_barang, 'terjual': jumlah_terjual}
+                new_row = {'barang': nama_barang, 'terjual': jumlah_terjual, 'harga': harga_terjual}
                 histori_df = pd.concat([histori_df, pd.DataFrame([new_row])], ignore_index=True)
 
             # Simpan kembali ke file
