@@ -63,18 +63,6 @@ def bikin_id(username):
     
     return f'{str(id_jadi)}'
 
-def ambil_nama_toko_dari_email(email):
-    """
-    Fungsi simulasi untuk mendapatkan nama toko berdasarkan email penjual.
-    Ganti dengan logika database jika diperlukan.
-    """
-    # Simulasi data email dan toko
-    mapping_toko = {
-        "penjual1@example.com": "Toko_A",
-        "penjual2@example.com": "Toko_B",
-    }
-    return mapping_toko.get(email)
-
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU AWAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def register():
     os.system('cls')
@@ -85,7 +73,7 @@ def register():
         
     print('\n1. Penjual\n2. Pembeli\n3. Kembali\n')
     pilihan = input('Registrasi sebagai : ')
-        
+     
     if pilihan == '1':
         os.system('cls')
         
@@ -100,7 +88,12 @@ def register():
         print('╚' + '═'*48 + '╝')
         print()
         
-        username = input('Masukkan username : ')
+        while kondisi:
+            username = input('Masukkan username : ')
+            if len(username) < 3:
+                print('Username harus berisi minimal 3 karakter!')
+            else:
+                kondisi = False
         
         while kondisi:
             password = input('Masukkan password : ')
@@ -143,7 +136,12 @@ def register():
         print('╚' + '═'*48 + '╝')
         print()
         
-        username = input('Masukkan username : ')
+        while kondisi:
+            username = input('Masukkan username : ')
+            if len(username) < 3:
+                print('Username harus berisi minimal 3 karakter!')
+            else:
+                kondisi = False
         
         while kondisi:
             password = input('Masukkan password : ')
@@ -875,10 +873,11 @@ def get_user_by_role(role):
     
     return buyer_users
     
-def hitung_total_penjualan_dan_biaya_admin(folder_pembeli, buyer_users):
+def biaya_admin(folder_pembeli, buyer_users):
     sub_folder = os.path.join(folder_pembeli, f'{buyer_users}')
     histori_file = os.path.join(sub_folder, f'histori_{buyer_users}.csv')
-    
+
+    os.system('cls')
     if not os.path.exists(histori_file):
         print(f"File histori untuk {buyer_users} tidak ditemukan.")
         return
@@ -889,54 +888,78 @@ def hitung_total_penjualan_dan_biaya_admin(folder_pembeli, buyer_users):
         print(f"Error membaca file CSV: {e}")
         return
 
-    required_columns = {'harga', 'jumlah'}
+    required_columns = {'barang', 'harga', 'jumlah'}
     if not required_columns.issubset(df.columns):
         print(f"File CSV tidak memiliki kolom yang diperlukan: {required_columns}")
         return
 
     df['total_harga'] = df['harga'] * df['jumlah']
-    df['biaya_admin'] = df['total_harga'] * 0.08  # Biaya admin 8% dari total harga
 
-    total_penjualan = df['total_harga'].sum()
-    total_biaya_admin = df['biaya_admin'].sum()
+    try:
+        print("\nTabel Data Penjualan:")
+        print(f"{'Barang':<20} {'Jumlah':<10} {'Harga':<10} {'Total Harga':<10}")
+        print("-" * 60)
+        
+        for _, row in df.iterrows():
+            print(f"{row['barang']:<20} {row['jumlah']:<10} {row['harga']:<10} {row['total_harga']:<10}")
+        
+        total_penjualan = df['total_harga'].sum()
+        biaya_admin_total = total_penjualan * 0.08
 
-    print(f"Total Penjualan: {total_penjualan}")
-    print(f"Total Biaya Admin: {total_biaya_admin}")
-
+        print("-" * 60)
+        print(f"\nTotal Penjualan: {total_penjualan}")
+        print(f"Total Biaya Admin (8%): {biaya_admin_total}")
+    except ValueError:
+        print("Masukkan nomor yang valid!")
+    
+    input('\nTekan enter untuk kembali...')
+    pilih_pembeli_dan_hitung()
+    
     # Buat DataFrame untuk menyimpan hasil
     result_df = pd.DataFrame({
         'Total Penjualan': [total_penjualan],
-        'Total Biaya Admin': [total_biaya_admin]
+        'Total Biaya Admin': [biaya_admin_total]
     })
 
     # Simpan ke file CSV
     total_penjualan_file = os.path.join(sub_folder, f'total_penjualan_{buyer_users}.csv')
     try:
+        result_df = pd.DataFrame({'Total Penjualan': [total_penjualan], 'Total Biaya Admin': [biaya_admin_total]})
         result_df.to_csv(total_penjualan_file, index=False)
     except Exception as e:
         print(f"Error menyimpan file CSV: {e}")
         return
 
 def pilih_pembeli_dan_hitung():
+    os.system('cls')
     buyer_users = get_user_by_role('buyer')  # Mendapatkan daftar pembeli
     if buyer_users:
+        while True:
         # Pilih salah satu pengguna dari daftar
-        print("Daftar pembeli yang tersedia:")
-        for idx, user in enumerate(buyer_users, 1):
-            print(f"{idx}. {user}")
+            print("\nDaftar pembeli yang tersedia:")
+            for idx, user in enumerate(buyer_users, 1):
+                print(f"{idx}. {user}")
+            print(f"{len(buyer_users) + 1}. Kembali ke menu sebelumnya")  # Opsi untuk kembali
         
-        pilihan_user = int(input("\nPilih pembeli (nomor): ")) - 1
-        if 0 <= pilihan_user < len(buyer_users):
-            user = buyer_users[pilihan_user]  # Pilih pengguna
-            folder_pembeli = 'data_pembeli'  # Folder pembeli
-            hitung_total_penjualan_dan_biaya_admin(folder_pembeli, user)  # Memanggil fungsi perhitungan
-        else:
-            print("Pilihan tidak valid.")
+            try:
+                pilihan_user = int(input("\nPilih pembeli (nomor): ")) - 1
+                if 0 <= pilihan_user < len(buyer_users):
+                    user = buyer_users[pilihan_user]  # Pilih pengguna
+                    folder_pembeli = 'data_pembeli'  # Folder pembeli
+                    biaya_admin(folder_pembeli, user)  # Memanggil fungsi perhitungan
+                    break
+                elif pilihan_user == len(buyer_users):
+                    print("Kembali ke menu sebelumnya")
+                    break
+                else:
+                    print("Pilihan tidak valid.")
+
+            except ValueError:
+                print("Inputan tidak valid. Masukkan nomor yang sesuai.")
     else:
         print("Tidak ada pembeli terdaftar.")
     
-    input("Tekan Enter untuk kembali ke menu...")  # Menunggu input agar tidak langsung kembali
-
+    input("\nTekan Enter untuk kembali ke menu...")  # Menunggu input agar tidak langsung kembali
     
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FITUR PROFIL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def profil(index):
@@ -1096,7 +1119,9 @@ def tambah_barang (user):
     while kondisi2:
         barang = input('Masukkan nama barang : ')
         
-        if barang in baca['barang'].values:
+        if not barang:  # Jika nama barang kosong
+            print("Nama barang tidak boleh kosong!")
+        elif barang in baca['barang'].values:
             print('Barang sudah ada dalam data!')
         else:
             kondisi2 = False
@@ -1592,18 +1617,22 @@ def tampilkan_keranjang(user):
 
     keadaan = True
     while keadaan:
-        pilihan = input('\nApakah Anda ingin checkout? (y/n): ')
-        if pilihan.lower() == 'y':
+        print("\nApakah anda yakin ingin checkout?\n1. Checkout\n2. Hapus Keranjang Belanja\n3. Ubah Keranjang Belanja\n4. kembali")
+        pilihan = input('\nSilahkan Pilih: ')
+        if pilihan.lower() == '1':
             checkout(total_harga)
             simpan_riwayat_belanja(user, riwayat_belanja)
             keadaan = False
-        elif pilihan.lower() == 'n':
-            hapus_keranjang_belanja()
+        elif pilihan.lower() == '2':
+            hapus_keranjang_belanja(user)
+            keadaan = False
+        elif pilihan.lower() == '3':
             ubah_jumlah_barang(user)
+            keadaan = False
+        elif pilihan.lower() == '4':
             keadaan = False
         else:
             input('\nTekan enter untuk kembali')
-            
 
 # FITUR CHECKOUT DAN NOTA
 def checkout(total_harga):
@@ -1649,7 +1678,7 @@ def checkout(total_harga):
     input('\nTekan enter untuk kembali ke menu utama')
 
 #FITUR TIDAK JADI CHECKOUT
-def hapus_keranjang_belanja():
+def hapus_keranjang_belanja(user):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Hapus Barang dari Keranjang'.center(48) + '║')
@@ -1674,18 +1703,44 @@ def hapus_keranjang_belanja():
 
         print('-' * 78)
         print(f'Total Belanja: Rp{total_harga:,}')
-        pilihan = int(input('\nMasukkan nomor barang yang ingin dihapus (tekan enter untuk melanjutkan): '))
+        pilihan = int(input('\nMasukkan nomor barang yang ingin dihapus: '))
         if 1 <= pilihan <= len(keranjang):
             item_hapus = keranjang.pop(pilihan - 1)
             print(f'{item_hapus["barang"]} dari {item_hapus["toko"]} telah dihapus dari keranjang.')
         else:
             print('Pilihan tidak valid!')
     except ValueError:
-        print('Apakah anda ingin mengubah jumlah barang?')
+        print("Masukkan nomor yang valid!")
+    
+    input('\nTekan enter untuk checkout')
+    tampilkan_keranjang(user)
 
 #FITUR TIDAK JADI CHECKOUT
-def ubah_jumlah_barang(user):    
+def ubah_jumlah_barang(user):   
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('╔' + '═' * 48 + '╗')
+    print('║' + 'Hapus Barang dari Keranjang'.center(48) + '║')
+    print('╚' + '═' * 48 + '╝')
+    print()
+    
+    if not keranjang:
+        print('Keranjang Anda kosong.')
+        input('\nTekan enter untuk kembali ke menu utama.')
+        return
+
     try:
+        total_harga = 0
+        print(f'{"No":<3} {"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
+        print('-' * 78)
+        for idx, item in enumerate(keranjang, start=1):
+            subtotal = item['jumlah'] * item['harga']
+            total_harga += subtotal
+            print(f'{idx:<3} {item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{subtotal:<12}')
+            if not all(key in item for key in ['barang', 'harga', 'jumlah', 'toko']):
+                continue
+
+        print('-' * 78)
+        print(f'Total Belanja: Rp{total_harga:,}') 
         pilihan = int(input("\nMasukkan nomor barang yang ingin diubah (enter untuk kembali): "))
         if 1 <= pilihan <= len(keranjang):
             item = keranjang[pilihan - 1]
