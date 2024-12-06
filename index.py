@@ -913,7 +913,6 @@ def hitung_total_penjualan_dan_biaya_admin(folder_pembeli, buyer_users):
     total_penjualan_file = os.path.join(sub_folder, f'total_penjualan_{buyer_users}.csv')
     try:
         result_df.to_csv(total_penjualan_file, index=False)
-        print(f"Hasil perhitungan disimpan di: {total_penjualan_file}")
     except Exception as e:
         print(f"Error menyimpan file CSV: {e}")
         return
@@ -1430,7 +1429,7 @@ def menu_pembeli(email):
         if pilihan == '1':
             profil(index)
         elif pilihan == '2':
-            menu_belibarang()
+            menu_belibarang(user)
         elif pilihan == '3':
             tampilkan_riwayat_belanja(user, riwayat_belanja)
         elif pilihan == '4':
@@ -1439,7 +1438,7 @@ def menu_pembeli(email):
             print('Masukkan input yang benar!')
 
 #FITUR ISI DARI MENU BELI BARANG
-def menu_belibarang():
+def menu_belibarang(user):
     while True:
         os.system('cls')
         print('╔' + '═'*48 + '╗')
@@ -1457,7 +1456,7 @@ def menu_belibarang():
         if pilihan == '1':    
             daftar_toko()
         elif pilihan == '2':
-            tampilkan_keranjang()
+            tampilkan_keranjang(user)
         elif pilihan == '3':
             break  # Langsung keluar dari menu beli barang
         else:
@@ -1566,7 +1565,7 @@ def daftar_barang(nama_toko):
             return
 
 #FITUR KERANJANG BELANJA
-def tampilkan_keranjang():
+def tampilkan_keranjang(user):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Keranjang Belanja'.center(48) + '║')
@@ -1596,10 +1595,11 @@ def tampilkan_keranjang():
         pilihan = input('\nApakah Anda ingin checkout? (y/n): ')
         if pilihan.lower() == 'y':
             checkout(total_harga)
+            simpan_riwayat_belanja(user, riwayat_belanja)
             keadaan = False
         elif pilihan.lower() == 'n':
             hapus_keranjang_belanja()
-            ubah_jumlah_barang()
+            ubah_jumlah_barang(user)
             keadaan = False
         else:
             input('\nTekan enter untuk kembali')
@@ -1684,7 +1684,7 @@ def hapus_keranjang_belanja():
         print('Apakah anda ingin mengubah jumlah barang?')
 
 #FITUR TIDAK JADI CHECKOUT
-def ubah_jumlah_barang():    
+def ubah_jumlah_barang(user):    
     try:
         pilihan = int(input("\nMasukkan nomor barang yang ingin diubah (enter untuk kembali): "))
         if 1 <= pilihan <= len(keranjang):
@@ -1712,7 +1712,7 @@ def ubah_jumlah_barang():
         print("Masukkan nomor yang valid!")
     
     input('\nTekan enter untuk checkout')
-    tampilkan_keranjang()
+    tampilkan_keranjang(user)
 
 def simpan_riwayat_belanja(user, riwayat_belanja):
     folder_pembeli = 'data_pembeli'
@@ -1742,13 +1742,23 @@ def simpan_riwayat_belanja(user, riwayat_belanja):
                 'total': transaksi['total']
             })
 
-    # Jika file riwayat belum ada, buat file baru
-    if not os.path.exists(histori):
-        user_df = pd.DataFrame(data)
-        user_df.to_csv(histori, index=False)
-    else:
-        user_df = pd.DataFrame(data)
-        user_df.to_csv(histori, mode='a', header=False, index=False)
+    # Periksa apakah file riwayat sudah ada
+    try:
+        if os.path.exists(histori):
+            # Baca data lama
+            df_lama = pd.read_csv(histori)
+            # Gabungkan data lama dengan data baru
+            df_baru = pd.DataFrame(data)
+            df_tergabung = pd.concat([df_lama, df_baru], ignore_index=True)
+        else:
+            # Jika file tidak ada, gunakan hanya data baru
+            df_tergabung = pd.DataFrame(data)
+        
+        # Simpan ke file CSV
+        df_tergabung.to_csv(histori, index=False)
+        print(f"Riwayat belanja telah berhasil disimpan untuk user {user}.")
+    except Exception as e:
+        print(f"Error menyimpan file riwayat: {e}")
 
 def tampilkan_riwayat_belanja(user, riwayat_belanja):
     folder_pembeli = 'data_pembeli'
@@ -1778,22 +1788,22 @@ def tampilkan_riwayat_belanja(user, riwayat_belanja):
     # Tampilkan seluruh riwayat belanja
     if histori_df.empty:
         print('Belum ada riwayat belanja.')
-
-    if not riwayat_belanja:
-        print('Belum ada riwayat belanja.')
     else:
-        for i, transaksi in enumerate(riwayat_belanja, start=1):
-            tanggal_transaksi = transaksi.get('tanggal', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))  # Tampilkan tanggal jika ada
-            print(f'Transaksi #{i} - {tanggal_transaksi}')
+        grouped = histori_df.groupby('tanggal')
+        for tanggal, transaksi in grouped:
+            print(f'Transaksi Tanggal: {tanggal}')
             print(f'{"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
             print('-' * 78)
-            for item in transaksi['item']:
-                print(f'{item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{item["subtotal"]:<12}')
+            for _, row in transaksi.iterrows():
+                print(
+                    f'{row["barang"]:<20} {row["toko"]:<15} {row["jumlah"]:<8} '
+                    f'Rp{row["harga"]:<12,} Rp{row["subtotal"]:<12,}'
+                )
+            total = transaksi['total'].iloc[0]  # Ambil total dari salah satu baris
             print('-' * 78)
-            print(f'Total Belanja: Rp{transaksi["total"]:,}')
+            print(f'Total Belanja: Rp{total:,}')
             print()
     
-    simpan_riwayat_belanja(user, riwayat_belanja)
     perbarui_histori_penjualan(riwayat_belanja)
 
     input('\nTekan enter untuk kembali ke menu utama')
