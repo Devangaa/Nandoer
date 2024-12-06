@@ -233,11 +233,10 @@ def login():
 
             email = input('\nMasukkan email : ')
             password = input('Masukkan password : ')
-            toko = ambil_nama_toko_dari_email(email)
 
             user = seller[(seller['email'] == email) & (seller['password'] == password) & (seller['role'] == 'seller')]
             if not user.empty:
-                menu_penjual(email, toko)
+                menu_penjual(email)
                 i+=3
             else:
                 print('\nLogin gagal! email atau password salah.')
@@ -953,7 +952,7 @@ def profil(index):
     i = input('\nKetik apa saja untuk kembali')
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU PENJUAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-def menu_penjual(email, toko):
+def menu_penjual(email):
     baca = pd.read_csv(FILE_USER)
     
     kondisi = True
@@ -970,7 +969,7 @@ def menu_penjual(email, toko):
         print('║' + user.center(48) + '║')
         print('╚' + '═'*48 + '╝')
         
-        print('\n1. Profil akun\n2. Edit barang\n3. Riwayat Penjualan\n4. Total Penjualan\n5. Keluar akun')
+        print('\n1. Profil akun\n2. Edit barang\n3. Riwayat Penjualan\n4. Keluar akun')
         
         kondisi2 = True
         
@@ -984,11 +983,9 @@ def menu_penjual(email, toko):
                     edit_barang_penjual(user)
                     kondisi2 = False
                 elif pilihan == '3':
-                    tampilkan_histori_penjualan(toko)
+                    tampilkan_histori_penjualan(user)
                     kondisi2 = False
                 elif pilihan == '4':
-                    kondisi2 = False
-                elif pilihan == '5':
                     kondisi2 = False
                     kondisi = False
                 else:
@@ -1308,10 +1305,10 @@ def edit_stok(user):
     
     i = input('\nTekan enter untuk kembali')
     
-def tampilkan_histori_penjualan(toko):
+def tampilkan_histori_penjualan(user):
     folder_toko = 'data_toko'
-    sub_folder = os.path.join(folder_toko, f'{toko}')
-    file_histori = os.path.join(sub_folder, f'histori_{toko}.csv')
+    sub_folder = os.path.join(folder_toko, f'toko_{user}')
+    file_histori = os.path.join(sub_folder, f'histori_toko_{user}.csv')
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 50 + '╗')
     print('║' + 'Histori Penjualan'.center(50) + '║')
@@ -1319,7 +1316,7 @@ def tampilkan_histori_penjualan(toko):
 
     # Periksa apakah file histori penjualan ada
     if not os.path.exists(file_histori):
-        print(f"Belum ada histori penjualan untuk toko {toko}.")
+        print(f"Belum ada histori penjualan untuk toko {user}.")
         input("\nTekan enter untuk kembali.")
         return
 
@@ -1335,11 +1332,13 @@ def tampilkan_histori_penjualan(toko):
     if histori_df.empty:
         print("Tidak ada histori penjualan.")
     else:
-        print(f"\nHistori penjualan untuk toko {toko}:")
-        print(f"{'No':<5} {'Barang':<30} {'Terjual':<10}")
-        print('-' * 50)
+        print(f"\nHistori penjualan untuk toko {user}:")
+        print(f"{'No':<5} {'Barang':<30} {'Terjual':<10} {'Harga':<10}")
+        print('-' * 60)
         for index, row in histori_df.iterrows():
-            print(f"{index + 1:<5} {row['barang']:<30} {row['terjual']:<10}")
+            print(f"{index + 1:<5} {row['barang']:<30} {row['terjual']:<10} {row['harga']:<10}")
+
+    
 
     perbarui_histori_penjualan(riwayat_belanja)
 
