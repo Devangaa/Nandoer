@@ -4,6 +4,7 @@ import pandas as pd
 
 FILE_ADMIN = 'data_admin.csv'
 FILE_USER = 'data_user.csv'
+folder_admin = 'data_admin'
 folder_toko = 'data_toko'
 folder_pembeli = 'data_pembeli'
 
@@ -15,6 +16,8 @@ def cek_data():
     if not os.path.exists(FILE_ADMIN):  
         user = pd.DataFrame(columns=['username', 'password']) 
         user.to_csv(FILE_ADMIN, index=False) 
+    if not os.path.exists(folder_admin):
+        os.makedirs(folder_admin)
     if not os.path.exists(folder_toko):
         os.makedirs(folder_toko)
     if not os.path.exists(folder_pembeli):
@@ -66,7 +69,6 @@ def bikin_id(username):
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<MENU AWAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def register():
     os.system('cls')
-        
     print('╔' + '═'*48 + '╗')
     print('║' + 'Registrasi Akun'.center(48) + '║')
     print('╚' + '═'*48 + '╝')
@@ -81,6 +83,7 @@ def register():
         
         kondisi = True
         kondisi2 = True
+        kondisi3 = True
         
         print('╔' + '═'*48 + '╗')
         print('║' + 'Registrasi Akun'.center(48) + '║')
@@ -95,21 +98,21 @@ def register():
             else:
                 kondisi = False
         
-        while kondisi:
+        while kondisi2:
             password = input('Masukkan password : ')
             
             if len(password) < 8:
                 print('Password harus berisi minimal 8 karakter!')
             else:
-                kondisi = False
+                kondisi2 = False
         
-        while kondisi2:
+        while kondisi3:
             email = input('Masukkan email : ')
         
             if email in seller['email'].values:
                 print('Email sudah digunakan, silahkan gunakan email lain.')
             if cek_email(email):
-                kondisi2 = False
+                kondisi3 = False
             else:
                 print('Masukkan email yang valid!')
                 
@@ -129,6 +132,7 @@ def register():
         
         kondisi = True
         kondisi2 = True
+        kondisi3 = True
         
         print('╔' + '═'*48 + '╗')
         print('║' + 'Registrasi Akun'.center(48) + '║')
@@ -143,21 +147,21 @@ def register():
             else:
                 kondisi = False
         
-        while kondisi:
+        while kondisi2:
             password = input('Masukkan password : ')
             
             if len(password) < 8:
                 print('Password harus berisi minimal 8 karakter!')
             else:
-                kondisi = False
+                kondisi2 = False
         
-        while kondisi2:
+        while kondisi3:
             email = input('Masukkan email : ')
         
             if email in buyer['email'].values:
                 print('Email sudah digunakan, silahkan gunakan email lain.')
             if cek_email(email):
-                kondisi2 = False
+                kondisi3 = False
             else:
                 print('Masukkan email yang valid!')
         
@@ -285,7 +289,7 @@ def menu_admin(user):
         print('║' + user.center(48) + '║')
         print('╚' + '═'*48 + '╝')
         
-        print('\n1. Edit akun penjual\n2. Edit akun pembeli\n3. Total Penjualan\n4. Keluar akun')
+        print('\n1. Edit akun penjual\n2. Edit akun pembeli\n3. Pendapatan Biaya Admin\n4. Keluar akun')
         
         kondisi2 = True
         
@@ -343,7 +347,7 @@ def edit_akun_seller():
                 pilih = False
             else:
                 print('Masukkan input yang benar!')
-
+# 
 # FITUR LEBIH LENGKAP
 def tambah_akun_seller():
     os.system('cls')
@@ -584,7 +588,8 @@ def edit_akun_buyer():
         os.system('cls')
         
         print('╔' + '═'*48 + '╗')
-        print('║' + 'Menu Edit Akun Buyer'.center(48) + '║')
+        print('║' + 'Menu Edit Akun'.center(48) + '║')
+        print('║' + 'Pembeli'.center(48) + '║')
         print('╚' + '═'*48 + '╝')
         
         print('\n1. Lihat akun pembeli\n2. Tambah akun pembeli\n3. Ubah akun pembeli\n4. Hapus akun pembeli\n5. Kembali')
@@ -750,7 +755,7 @@ def lihat_akun_buyer():
     
     print('╔' + '═'*48 + '╗')
     print('║' + 'List Akun'.center(48) + '║')
-    print('║' + 'Penjual'.center(48) + '║')
+    print('║' + 'Pembeli'.center(48) + '║')
     print('╚' + '═'*48 + '╝')
     print()
     
@@ -896,18 +901,19 @@ def biaya_admin(folder_pembeli, buyer_users):
     df['total_harga'] = df['harga'] * df['jumlah']
 
     try:
-        print("\nTabel Data Penjualan:")
+        print("\nTabel Data Belanja:")
+        print("-" * 60)
         print(f"{'Barang':<20} {'Jumlah':<10} {'Harga':<10} {'Total Harga':<10}")
         print("-" * 60)
         
         for _, row in df.iterrows():
             print(f"{row['barang']:<20} {row['jumlah']:<10} {row['harga']:<10} {row['total_harga']:<10}")
         
-        total_penjualan = df['total_harga'].sum()
-        biaya_admin_total = total_penjualan * 0.08
+        total_belanja = df['total_harga'].sum()
+        biaya_admin_total = total_belanja * 0.08
 
         print("-" * 60)
-        print(f"\nTotal Penjualan: {total_penjualan}")
+        print(f"\nTotal Belanja: {total_belanja}")
         print(f"Total Biaya Admin (8%): {biaya_admin_total}")
     except ValueError:
         print("Masukkan nomor yang valid!")
@@ -917,30 +923,38 @@ def biaya_admin(folder_pembeli, buyer_users):
     
     # Buat DataFrame untuk menyimpan hasil
     result_df = pd.DataFrame({
-        'Total Penjualan': [total_penjualan],
+        'Total Belanja': [total_belanja],
         'Total Biaya Admin': [biaya_admin_total]
     })
 
     # Simpan ke file CSV
-    total_penjualan_file = os.path.join(sub_folder, f'total_penjualan_{buyer_users}.csv')
+    sub_folder = os.path.join(folder_admin,f'{buyer_users}.csv')
+    if not os.path.exists(sub_folder):
+        os.makedirs(sub_folder)
+    
+    total_terbeli_file = os.path.join(sub_folder, f'total_terbeli_{buyer_users}.csv')
+    if not os.path.exists(total_terbeli_file):  
+        user_df = pd.DataFrame(columns=['Total Belanja', 'Total Biaya Admin']) 
+        user_df.to_csv(total_terbeli_file, index=False)
+
     try:
-        result_df = pd.DataFrame({'Total Penjualan': [total_penjualan], 'Total Biaya Admin': [biaya_admin_total]})
-        result_df.to_csv(total_penjualan_file, index=False)
+        result_df = pd.DataFrame({'Total Belanja': [total_belanja], 'Total Biaya Admin': [biaya_admin_total]})
+        result_df.to_csv(total_terbeli_file, index=False)
     except Exception as e:
         print(f"Error menyimpan file CSV: {e}")
         return
 
 def pilih_pembeli_dan_hitung():
-    os.system('cls')
     buyer_users = get_user_by_role('buyer')  # Mendapatkan daftar pembeli
     if buyer_users:
         while True:
+            os.system('cls')
         # Pilih salah satu pengguna dari daftar
             print("\nDaftar pembeli yang tersedia:")
             for idx, user in enumerate(buyer_users, 1):
                 print(f"{idx}. {user}")
             print(f"{len(buyer_users) + 1}. Kembali ke menu sebelumnya")  # Opsi untuk kembali
-        
+
             try:
                 pilihan_user = int(input("\nPilih pembeli (nomor): ")) - 1
                 if 0 <= pilihan_user < len(buyer_users):
@@ -953,13 +967,13 @@ def pilih_pembeli_dan_hitung():
                     break
                 else:
                     print("Pilihan tidak valid.")
-
+                    input("\nTekan Enter untuk kembali ke pilihan...")
             except ValueError:
                 print("Inputan tidak valid. Masukkan nomor yang sesuai.")
+                input("\nTekan Enter untuk kembali ke pilihan...")
     else:
         print("Tidak ada pembeli terdaftar.")
     
-    input("\nTekan Enter untuk kembali ke menu...")  # Menunggu input agar tidak langsung kembali
     
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FITUR PROFIL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def profil(index):
@@ -1449,7 +1463,8 @@ def menu_pembeli(email):
         
         if not pilihan:  # Jika input kosong
             print("Kembali ke menu sebelumnya...")
-            continue
+            i = input('\nTekan enter untuk kembali')
+            break
         
         if pilihan == '1':
             profil(index)
@@ -1461,6 +1476,7 @@ def menu_pembeli(email):
             kondisi = False
         else:
             print('Masukkan input yang benar!')
+            i = input('\nTekan enter untuk kembali')
 
 #FITUR ISI DARI MENU BELI BARANG
 def menu_belibarang(user):
@@ -1486,6 +1502,7 @@ def menu_belibarang(user):
             break  # Langsung keluar dari menu beli barang
         else:
             print('Masukkan input yang benar!')
+            i = input('\nTekan enter untuk kembali')
 
 keranjang = []
 riwayat_belanja = []
@@ -1519,7 +1536,7 @@ def daftar_toko():
             print('Pilihan tidak valid!')
     except ValueError:
         print('Masukkan nomor yang valid!')
-    
+
     i = input('\nTekan enter untuk kembali')
 
 # FITUR DAFTAR BARANG (setelah daftar toko)
@@ -1588,6 +1605,9 @@ def daftar_barang(nama_toko):
         except ValueError:
             print('Masukkan angka yang valid!')
             return
+        
+    input("Tekan Enter untuk kembali...")
+    daftar_toko()
 
 #FITUR KERANJANG BELANJA
 def tampilkan_keranjang(user):
