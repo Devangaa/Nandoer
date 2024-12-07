@@ -1119,29 +1119,29 @@ def list_barang(user):
 def tambah_barang (user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
-    
     baca = pd.read_csv(file_barang)
+
     os.system('cls')
-    
     print('╔' + '═'*48 + '╗')
     print('║' + 'Tambah Jenis Barang'.center(48) + '║')
     print('╚' + '═'*48 + '╝')
     print()
     
     kondisi2 = True
-    
     while kondisi2:
         barang = input('Masukkan nama barang : ')
         
-        if not barang:  # Jika nama barang kosong
-            print("Nama barang tidak boleh kosong!")
-        elif barang in baca['barang'].values:
+        if not barang:  # Jika input kosong, kembali ke menu
+            print("\nKembali ke menu sebelumnya.")
+            input("Tekan enter untuk kembali.")
+            return
+        
+        if barang in baca['barang'].values:
             print('Barang sudah ada dalam data!')
         else:
             kondisi2 = False
     
     kondisi3 = True
-    
     while kondisi3:
         try:
             harga = int(input('Masukkan harga barang : '))
@@ -1151,7 +1151,6 @@ def tambah_barang (user):
             print('Masukkan input berupa angka!')
             
     kondisi4 = True
-    
     while kondisi4:
         try:
             stok = int(input('Masukkan stok barang : '))
@@ -1165,18 +1164,15 @@ def tambah_barang (user):
     df_barang.to_csv(file_barang, index=False)
     
     print(f'\n{barang} telah ditambahkan dengan harga : {harga} dan stok : {stok}')
-    
     i = input('\nTekan enter untuk kembali')
 
 #FITUR HAPUS BARANG    
 def hapus_barang(user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
-    
     baca = pd.read_csv(file_barang)
     
     os.system('cls')
-    
     print('╔' + '═'*48 + '╗')
     print('║' + 'Hapus Barang'.center(48) + '║')
     print('╚' + '═'*48 + '╝')
@@ -1184,7 +1180,6 @@ def hapus_barang(user):
     
     if baca.empty:
         print('Tidak ada barang dalam toko ini!')
-        
         i = input('\nTekan enter untuk kembali')
         return
     
@@ -1196,7 +1191,6 @@ def hapus_barang(user):
         print(f'{index + 1}. {barang} | harga = {harga} | stok = {stok}')
         
     kondisi = True
-    
     print()
     
     while kondisi:
@@ -1207,14 +1201,13 @@ def hapus_barang(user):
             input('\nTekan enter untuk kembali')
             return
         
-        try:
-            hapus_item = int(input('Hapus item nomor : '))
-            
+        if hapus_item.isdigit():
+            hapus_item = int(hapus_item)
             if 1 <= hapus_item <= len(baca):
                 kondisi = False
             else:
                 print('Masukkan nomor barang yang sudah ada di atas!')
-        except:
+        else:
             print('Masukkan input yang benar!')
     
     baca.drop(baca.index[hapus_item - 1], inplace=True)
@@ -1228,11 +1221,9 @@ def hapus_barang(user):
 def edit_harga(user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
-    
     baca = pd.read_csv(file_barang)
     
     os.system('cls')
-    
     print('╔' + '═'*48 + '╗')
     print('║' + 'Edit Harga'.center(48) + '║')
     print('╚' + '═'*48 + '╝')
@@ -1240,7 +1231,6 @@ def edit_harga(user):
     
     if baca.empty:
         print('Tidak ada barang dalam toko ini!')
-        
         i = input('\nTekan enter untuk kembali')
         return
     
@@ -1252,49 +1242,57 @@ def edit_harga(user):
         print(f'{index + 1}. {barang} | harga = {harga} | stok = {stok}')
         
     kondisi = True
-    
     print()
     
     while kondisi:
-        try:
-            index_ubah = int(input('Ubah item nomor : '))
-            
+        index_ubah = input('Ubah item nomor : ')
+        
+        if index_ubah == '':  # Jika input kosong, kembali ke menu
+            print("\nKembali ke menu sebelumnya.")
+            input("\nTekan enter untuk kembali.")
+            return
+
+        if index_ubah.isdigit():  # Validasi input angka
+            index_ubah = int(index_ubah)
             if 1 <= index_ubah <= len(baca):
                 kondisi = False
             else:
-                print('Masukkan nomor barang yang sudah ada di atas!')
-        except:
-            print('Masukkan input yang benar!')
-    
+                print("Masukkan nomor barang yang sesuai daftar!")
+        else:
+            print("Masukkan nomor berupa angka!")
+
     barang_dipilih = baca.iloc[index_ubah-1]
     print(f'\nBarang yang dipilih: {barang_dipilih['barang']} | harga saat ini = {barang_dipilih['harga']}\n')
     
     kondisi2 = True
     
     while kondisi2:
-        try:
-            harga_baru = int(input('Masukkan harga baru : '))
-            
+        harga_baru = input('Masukkan harga baru : ')
+        
+        if harga_baru == '':  # Jika input kosong, kembali ke menu
+            print("\nTidak ada perubahan harga. Kembali ke menu.")
+            input("\nTekan enter untuk kembali.")
+            return
+
+        if harga_baru.isdigit():
+            harga_baru = int(harga_baru)
             kondisi2 = False
-        except:
-            print('Masukkan input berupa angka!')
+        else:
+            print("Masukkan input berupa angka!")
             
     baca.at[index_ubah-1, 'harga'] = harga_baru
     baca.to_csv(file_barang, index=False)
     
     print(f'\nHarga barang {barang_dipilih['barang']} berhasil diubah menjadi {harga_baru}.')
-    
     i = input('\nTekan enter untuk kembali')
     
 #FITUR EDIT STOK BARANG
 def edit_stok(user):
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_barang = os.path.join(sub_folder, f'toko_{user}.csv')
-    
     baca = pd.read_csv(file_barang)
     
     os.system('cls')
-    
     print('╔' + '═'*48 + '╗')
     print('║' + 'Edit Stok'.center(48) + '║')
     print('╚' + '═'*48 + '╝')
@@ -1302,7 +1300,6 @@ def edit_stok(user):
     
     if baca.empty:
         print('Tidak ada barang dalam toko ini!')
-        
         i = input('\nTekan enter untuk kembali')
         return
     
@@ -1314,20 +1311,25 @@ def edit_stok(user):
         print(f'{index + 1}. {barang} | harga = {harga} | stok = {stok}')
         
     kondisi = True
-    
+
     print()
     
     while kondisi:
-        try:
-            index_ubah = int(input('Ubah item nomor : '))
-            
+        index_ubah = input('Ubah item nomor : ')
+        
+        if index_ubah == '':  # Jika input kosong, kembali ke menu
+            print("\nKembali ke menu sebelumnya.")
+            input("\nTekan enter untuk kembali.")
+            return
+        
+        if index_ubah.isdigit():  # Validasi input angka
+            index_ubah = int(index_ubah)
             if 1 <= index_ubah <= len(baca):
-
                 kondisi = False
             else:
-                print('Masukkan nomor barang yang sudah ada di atas!')
-        except:
-            print('Masukkan input yang benar!')
+                print("Masukkan nomor barang yang sesuai daftar!")
+        else:
+            print("Masukkan nomor berupa angka!")
     
     barang_dipilih = baca.iloc[index_ubah-1]
     print(f'\nBarang yang dipilih: {barang_dipilih['barang']} | stok saat ini = {barang_dipilih['stok']}\n')
@@ -1335,12 +1337,18 @@ def edit_stok(user):
     kondisi2 = True
     
     while kondisi2:
-        try:
-            stok_baru = int(input('Masukkan stok baru : '))
-            
+        stok_baru = input('Masukkan stok baru : ')
+        
+        if harga_baru == '':  # Jika input kosong, kembali ke menu
+            print("\nTidak ada perubahan harga. Kembali ke menu.")
+            input("\nTekan enter untuk kembali.")
+            return
+
+        if harga_baru.isdigit():
+            harga_baru = int(harga_baru)
             kondisi2 = False
-        except:
-            print('Masukkan input berupa angka!')
+        else:
+            print("Masukkan input berupa angka!")
             
     baca.at[index_ubah-1, 'stok'] = stok_baru
     baca.to_csv(file_barang, index=False)
@@ -1739,7 +1747,7 @@ def hapus_keranjang_belanja(user):
 def ubah_jumlah_barang(user):   
     os.system('cls' if os.name == 'nt' else 'clear')
     print('╔' + '═' * 48 + '╗')
-    print('║' + 'Hapus Barang dari Keranjang'.center(48) + '║')
+    print('║' + 'Ubah Jumlah Barang dari Keranjang'.center(48) + '║')
     print('╚' + '═' * 48 + '╝')
     print()
     
