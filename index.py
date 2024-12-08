@@ -1704,6 +1704,7 @@ def checkout(total_harga):
     # Kosongkan keranjang
     keranjang.clear()
     input('\nTekan enter untuk kembali ke menu utama')
+    perbarui_histori_penjualan(riwayat_belanja)
 
 #FITUR TIDAK JADI CHECKOUT
 def hapus_keranjang_belanja(user):
@@ -1886,8 +1887,6 @@ def tampilkan_riwayat_belanja(user, riwayat_belanja):
             print('-' * 78)
             print(f'Total Belanja: Rp{total:,}')
             print()
-    
-    perbarui_histori_penjualan(riwayat_belanja)
 
     input('\nTekan enter untuk kembali ke menu utama')
 
