@@ -884,7 +884,8 @@ def biaya_admin(folder_pembeli, buyer_users):
 
     os.system('cls')
     if not os.path.exists(histori_file):
-        print(f"File histori untuk {buyer_users} tidak ditemukan.")
+        print(f"Tidak ada data pembelian untuk {buyer_users}.")
+        i = input('\nTekan enter untuk kembali...')
         return
     
     try:
@@ -896,6 +897,11 @@ def biaya_admin(folder_pembeli, buyer_users):
     required_columns = {'barang', 'harga', 'jumlah'}
     if not required_columns.issubset(df.columns):
         print(f"File CSV tidak memiliki kolom yang diperlukan: {required_columns}")
+        return
+    
+    if df.empty:
+        print(f"Tidak ada data pembelian untuk {buyer_users}.")
+        i = input('\nTekan enter untuk kembali...')
         return
 
     df['total_harga'] = df['harga'] * df['jumlah']
@@ -917,6 +923,8 @@ def biaya_admin(folder_pembeli, buyer_users):
         print(f"Total Biaya Admin (8%): {biaya_admin_total}")
     except ValueError:
         print("Masukkan nomor yang valid!")
+        i = input('\nTekan enter untuk kembali...')
+        return
     
     input('\nTekan enter untuk kembali...')
     pilih_pembeli_dan_hitung()
@@ -928,7 +936,7 @@ def biaya_admin(folder_pembeli, buyer_users):
     })
 
     # Simpan ke file CSV
-    sub_folder = os.path.join(folder_admin,f'{buyer_users}.csv')
+    sub_folder = os.path.join(folder_admin,f'{buyer_users}')
     if not os.path.exists(sub_folder):
         os.makedirs(sub_folder)
     
@@ -1845,7 +1853,6 @@ def simpan_riwayat_belanja(user, riwayat_belanja):
         print(f"Error menyimpan file riwayat: {e}")
 
 def tampilkan_riwayat_belanja(user, riwayat_belanja):
-    folder_pembeli = 'data_pembeli'
     sub_folder = os.path.join(folder_pembeli, f'{user}')
     histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
     os.system('cls' if os.name == 'nt' else 'clear')
