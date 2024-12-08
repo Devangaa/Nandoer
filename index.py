@@ -898,11 +898,6 @@ def biaya_admin(folder_pembeli, buyer_users):
     if not required_columns.issubset(df.columns):
         print(f"File CSV tidak memiliki kolom yang diperlukan: {required_columns}")
         return
-    
-    if df.empty:
-        print(f"Tidak ada data pembelian untuk {buyer_users}.")
-        i = input('\nTekan enter untuk kembali...')
-        return
 
     df['total_harga'] = df['harga'] * df['jumlah']
 
@@ -923,8 +918,6 @@ def biaya_admin(folder_pembeli, buyer_users):
         print(f"Total Biaya Admin (8%): {biaya_admin_total}")
     except ValueError:
         print("Masukkan nomor yang valid!")
-        i = input('\nTekan enter untuk kembali...')
-        return
     
     input('\nTekan enter untuk kembali...')
     pilih_pembeli_dan_hitung()
