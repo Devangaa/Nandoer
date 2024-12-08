@@ -1614,7 +1614,7 @@ def daftar_barang(nama_toko):
             print('Masukkan angka yang valid!')
             return
         
-    input("Tekan Enter untuk kembali...")
+    i = input("Tekan Enter untuk kembali...")
     daftar_toko()
 
 #FITUR KERANJANG BELANJA
