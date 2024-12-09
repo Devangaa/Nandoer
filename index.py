@@ -1362,7 +1362,7 @@ def tampilkan_histori_penjualan(user):
     folder_toko = 'data_toko'
     sub_folder = os.path.join(folder_toko, f'toko_{user}')
     file_histori = os.path.join(sub_folder, f'histori_toko_{user}.csv')
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 50 + '╗')
     print('║' + 'Histori Penjualan'.center(50) + '║')
     print('╚' + '═' * 50 + '╝')
@@ -1518,7 +1518,7 @@ riwayat_belanja = []
 
 # FITUR DAFTAR TOKO
 def daftar_toko():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Daftar Toko'.center(48) + '║')
     print('╚' + '═' * 48 + '╝')
@@ -1550,7 +1550,7 @@ def daftar_toko():
 
 # FITUR DAFTAR BARANG (setelah daftar toko)
 def daftar_barang(nama_toko):
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Daftar Barang'.center(48) + '║')
     print('║' + nama_toko.center(48) + '║')
@@ -1620,7 +1620,7 @@ def daftar_barang(nama_toko):
 
 #FITUR KERANJANG BELANJA
 def tampilkan_keranjang(user):
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Keranjang Belanja'.center(48) + '║')
     print('╚' + '═' * 48 + '╝')
@@ -1665,7 +1665,7 @@ def tampilkan_keranjang(user):
 
 # FITUR CHECKOUT DAN NOTA
 def checkout(total_harga):
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Nota Belanja'.center(48) + '║')
     print('╚' + '═' * 48 + '╝')
@@ -1709,7 +1709,7 @@ def checkout(total_harga):
 
 #FITUR TIDAK JADI CHECKOUT
 def hapus_keranjang_belanja(user):
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Hapus Barang dari Keranjang'.center(48) + '║')
     print('╚' + '═' * 48 + '╝')
@@ -1756,7 +1756,7 @@ def hapus_keranjang_belanja(user):
 
 #FITUR TIDAK JADI CHECKOUT
 def ubah_jumlah_barang(user):   
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Ubah Jumlah Barang dari Keranjang'.center(48) + '║')
     print('╚' + '═' * 48 + '╝')
@@ -1857,7 +1857,7 @@ def simpan_riwayat_belanja(user, riwayat_belanja):
 def tampilkan_riwayat_belanja(user, riwayat_belanja):
     sub_folder = os.path.join(folder_pembeli, f'{user}')
     histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
     print('╔' + '═' * 48 + '╗')
     print('║' + 'Riwayat Belanja'.center(48) + '║')
     print('╠' + '═' * 48 + '╣')
