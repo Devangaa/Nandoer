@@ -1340,13 +1340,13 @@ def edit_stok(user):
     while kondisi2:
         stok_baru = input('Masukkan stok baru : ')
         
-        if harga_baru == '':  # Jika input kosong, kembali ke menu
+        if stok_baru == '': 
             print("\nTidak ada perubahan harga. Kembali ke menu.")
             input("\nTekan enter untuk kembali.")
             return
 
-        if harga_baru.isdigit():
-            harga_baru = int(harga_baru)
+        if stok_baru.isdigit():
+            stok_baru = int(stok_baru)
             kondisi2 = False
         else:
             print("Masukkan input berupa angka!")
@@ -1736,7 +1736,16 @@ def hapus_keranjang_belanja(user):
         pilihan = int(input('\nMasukkan nomor barang yang ingin dihapus: '))
         if 1 <= pilihan <= len(keranjang):
             item_hapus = keranjang.pop(pilihan - 1)
-            print(f'{item_hapus["barang"]} dari {item_hapus["toko"]} telah dihapus dari keranjang.')
+            # Kembalikan stok ke file CSV
+            file_barang = os.path.join(folder_toko, item_hapus['toko'], f'{item_hapus["toko"]}.csv')
+            if os.path.exists(file_barang):
+                # Membaca file CSV
+                baca = pd.read_csv(file_barang)
+                # Cari barang yang sesuai dan tambahkan stoknya
+                baca.loc[baca['barang'] == item_hapus['barang'], 'stok'] += item_hapus['jumlah']
+                # Simpan kembali file CSV
+                baca.to_csv(file_barang, index=False)
+                print(f'{item_hapus["barang"]} dari {item_hapus["toko"]} telah dihapus dari keranjang.')
         else:
             print('Pilihan tidak valid!')
     except ValueError:
