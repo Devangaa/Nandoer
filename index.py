@@ -1415,16 +1415,23 @@ def perbarui_histori_penjualan(riwayat_belanja):
             file_histori = os.path.join(sub_folder, f'histori_{toko}.csv')
 
             if not os.path.exists(file_histori):
-                histori_df = pd.DataFrame(columns=['barang', 'terjual', 'harga'])
+                histori_df = pd.DataFrame(columns=['barang', 'terjual', 'harga', 'total_harga', 'total_penjualan'])
                 histori_df.to_csv(file_histori, index=False)
             else:
                 histori_df = pd.read_csv(file_histori)
 
             if nama_barang in histori_df['barang'].values:
                 histori_df.loc[histori_df['barang'] == nama_barang, 'terjual'] += jumlah_terjual
+                histori_df.loc[histori_df['barang'] == nama_barang, 'total_harga'] = \
+                    histori_df.loc[histori_df['barang'] == nama_barang, 'terjual'] * harga_terjual
             else:
-                new_row = {'barang': nama_barang, 'terjual': jumlah_terjual, 'harga': harga_terjual}
+                total_harga = jumlah_terjual * harga_terjual
+                new_row = {'barang': nama_barang, 'terjual': jumlah_terjual, 'harga': harga_terjual, 
+                           'total_harga': total_harga, 'total_penjualan': 0}  
                 histori_df = pd.concat([histori_df, pd.DataFrame([new_row])], ignore_index=True)
+
+            total_penjualan = histori_df['total_harga'].sum()
+            histori_df['total_penjualan'] = total_penjualan
 
             histori_df.to_csv(file_histori, index=False)
 
@@ -1906,4 +1913,4 @@ def main():
     
     print('\nTerima kasih telah menggunakan program ini :)')
     
-main()
+main()v
