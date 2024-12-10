@@ -850,7 +850,6 @@ def hapus_akun_buyer():
     i = input('\nKetik enter untuk kembali')
 
 def get_user_by_role(role):
-    # Path ke file data_user.csv
     file_user = 'data_user.csv'
     
     if not os.path.exists(file_user):
@@ -858,18 +857,15 @@ def get_user_by_role(role):
         return None
     
     try:
-        # Membaca file CSV
         df_user = pd.read_csv(file_user)
     except Exception as e:
         print(f"Error membaca file data_user.csv: {e}")
         return None
     
-    # Memastikan ada kolom 'username' dan 'role' di file CSV
     if 'username' not in df_user.columns or 'role' not in df_user.columns:
         print("File data_user.csv tidak memiliki kolom yang diperlukan: 'username' dan 'role'.")
         return None
     
-    # Menyaring pengguna dengan role 'buyer'
     buyer_users = df_user[df_user['role'] == role]['username'].tolist()
     
     if not buyer_users:
@@ -922,13 +918,11 @@ def biaya_admin(folder_pembeli, buyer_users):
     input('\nTekan enter untuk kembali...')
     pilih_pembeli_dan_hitung()
     
-    # Buat DataFrame untuk menyimpan hasil
     result_df = pd.DataFrame({
         'Total Belanja': [total_belanja],
         'Total Biaya Admin': [biaya_admin_total]
     })
 
-    # Simpan ke file CSV
     sub_folder = os.path.join(folder_admin,f'{buyer_users}')
     if not os.path.exists(sub_folder):
         os.makedirs(sub_folder)
@@ -946,22 +940,21 @@ def biaya_admin(folder_pembeli, buyer_users):
         return
 
 def pilih_pembeli_dan_hitung():
-    buyer_users = get_user_by_role('buyer')  # Mendapatkan daftar pembeli
+    buyer_users = get_user_by_role('buyer')
     if buyer_users:
         while True:
             os.system('cls')
-        # Pilih salah satu pengguna dari daftar
             print("\nDaftar pembeli yang tersedia:")
             for idx, user in enumerate(buyer_users, 1):
                 print(f"{idx}. {user}")
-            print(f"{len(buyer_users) + 1}. Kembali ke menu sebelumnya")  # Opsi untuk kembali
+            print(f"{len(buyer_users) + 1}. Kembali ke menu sebelumnya") 
 
             try:
                 pilihan_user = int(input("\nPilih pembeli (nomor): ")) - 1
                 if 0 <= pilihan_user < len(buyer_users):
-                    user = buyer_users[pilihan_user]  # Pilih pengguna
-                    folder_pembeli = 'data_pembeli'  # Folder pembeli
-                    biaya_admin(folder_pembeli, user)  # Memanggil fungsi perhitungan
+                    user = buyer_users[pilihan_user] 
+                    folder_pembeli = 'data_pembeli'  
+                    biaya_admin(folder_pembeli, user)
                     break
                 elif pilihan_user == len(buyer_users):
                     print("Kembali ke menu sebelumnya")
@@ -1367,36 +1360,29 @@ def tampilkan_histori_penjualan(user):
     print('║' + 'Histori Penjualan'.center(50) + '║')
     print('╚' + '═' * 50 + '╝')
 
-    # Periksa apakah file histori penjualan ada
     if not os.path.exists(file_histori):
         print(f"Belum ada histori penjualan untuk toko {user}.")
         input("\nTekan enter untuk kembali.")
         return
 
-    # Baca file histori penjualan
     try:
         histori_df = pd.read_csv(file_histori)
-        # Bersihkan nama kolom
-        histori_df.columns = histori_df.columns.str.strip()
     except Exception as e:
         print(f"Terjadi kesalahan saat membaca file histori: {e}")
         input("\nTekan enter untuk kembali.")
         return
 
-    # Periksa apakah file CSV kosong
     if histori_df.empty:
         print("File histori penjualan kosong.")
         input("\nTekan enter untuk kembali.")
         return
 
-    # Periksa apakah kolom yang diperlukan ada
     if 'harga' not in histori_df.columns or 'terjual' not in histori_df.columns:
         print("File CSV tidak memiliki kolom 'harga' atau 'terjual'.")
         print("Kolom yang ditemukan:", histori_df.columns)
         input("\nTekan enter untuk kembali.")
         return
 
-    # Tampilkan histori
     print(f"\nHistori penjualan untuk toko {user}:")
     print(f"{'No':<5} {'Barang':<30} {'Terjual':<10} {'Harga':<10} {'Total Harga':<15}")
     print('-' * 70)
@@ -1416,7 +1402,6 @@ def tampilkan_histori_penjualan(user):
 def perbarui_histori_penjualan(riwayat_belanja):
     for transaksi in riwayat_belanja:
         for item in transaksi['item']:
-            # Ambil informasi barang, toko, dan jumlah terjual
             toko = item['toko']
             nama_barang = item['barang']
             jumlah_terjual = item['jumlah']
@@ -1424,27 +1409,23 @@ def perbarui_histori_penjualan(riwayat_belanja):
 
             sub_folder = os.path.join('data_toko', f'{toko}')
             
-            # Periksa apakah folder sudah ada, jika tidak, buat folder
             if not os.path.exists(sub_folder):
                 os.makedirs(sub_folder)
             
             file_histori = os.path.join(sub_folder, f'histori_{toko}.csv')
 
-            # Jika file histori belum ada, buat dengan kolom default
             if not os.path.exists(file_histori):
                 histori_df = pd.DataFrame(columns=['barang', 'terjual', 'harga'])
                 histori_df.to_csv(file_histori, index=False)
             else:
                 histori_df = pd.read_csv(file_histori)
 
-            # Perbarui data histori
             if nama_barang in histori_df['barang'].values:
                 histori_df.loc[histori_df['barang'] == nama_barang, 'terjual'] += jumlah_terjual
             else:
                 new_row = {'barang': nama_barang, 'terjual': jumlah_terjual, 'harga': harga_terjual}
                 histori_df = pd.concat([histori_df, pd.DataFrame([new_row])], ignore_index=True)
 
-            # Simpan kembali ke file
             histori_df.to_csv(file_histori, index=False)
 
 
@@ -1470,7 +1451,7 @@ def menu_pembeli(email):
         
         pilihan = input('\nGunakan menu nomor : ')
         
-        if not pilihan:  # Jika input kosong
+        if not pilihan: 
             print("Kembali ke menu sebelumnya...")
             i = input('\nTekan enter untuk kembali')
             break
@@ -1480,7 +1461,7 @@ def menu_pembeli(email):
         elif pilihan == '2':
             menu_belibarang(user)
         elif pilihan == '3':
-            tampilkan_riwayat_belanja(user, riwayat_belanja)
+            tampilkan_riwayat_belanja(user)
         elif pilihan == '4':
             kondisi = False
         else:
@@ -1499,7 +1480,7 @@ def menu_belibarang(user):
         
         pilihan = input('\nGunakan menu nomor : ')
         
-        if not pilihan:  # Jika input kosong
+        if not pilihan: 
             print("Kembali ke menu sebelumnya...")
             break
         
@@ -1508,7 +1489,7 @@ def menu_belibarang(user):
         elif pilihan == '2':
             tampilkan_keranjang(user)
         elif pilihan == '3':
-            break  # Langsung keluar dari menu beli barang
+            break  
         else:
             print('Masukkan input yang benar!')
             i = input('\nTekan enter untuk kembali')
@@ -1524,7 +1505,6 @@ def daftar_toko():
     print('╚' + '═' * 48 + '╝')
     print()
     
-    # Mendapatkan daftar toko dari folder
     list_toko = os.listdir(folder_toko)
     
     if not list_toko:
@@ -1545,8 +1525,7 @@ def daftar_toko():
             print('Pilihan tidak valid!')
     except ValueError:
         print('Masukkan nomor yang valid!')
-
-    i = input('\nTekan enter untuk kembali')
+        i = input('\nTekan enter untuk kembali')
 
 # FITUR DAFTAR BARANG (setelah daftar toko)
 def daftar_barang(nama_toko):
@@ -1564,7 +1543,6 @@ def daftar_barang(nama_toko):
         i = input('\nTekan enter untuk kembali')
         return
     
-    # Membaca file CSV
     try:
         baca = pd.read_csv(file_barang)
         if baca.empty:
@@ -1575,7 +1553,6 @@ def daftar_barang(nama_toko):
         i = input('\nTekan enter untuk kembali')
         return
     
-    # Menampilkan list barang
     print('List barang:')
     for index, row in baca.iterrows():
         barang = row['barang']
@@ -1593,11 +1570,9 @@ def daftar_barang(nama_toko):
                 barang_dipilih = baca.iloc[int(pilihan_barang) - 1]
                 jumlah = int(input('Masukkan jumlah yang ingin dibeli: '))
                 if 0 < jumlah <= barang_dipilih["stok"]:
-                    # Kurangi stok barang di CSV
                     baca.loc[baca.index == barang_dipilih.name, 'stok'] -= jumlah
                     baca.to_csv(file_barang, index=False)
                     
-                    # Tambahkan ke keranjang
                     keranjang.append({
                         "barang": barang_dipilih["barang"],
                         "harga": barang_dipilih["harga"],
@@ -1613,9 +1588,8 @@ def daftar_barang(nama_toko):
                 jumlah = int(input('Masukkan jumlah yang ingin dibeli: '))
         except ValueError:
             print('Masukkan angka yang valid!')
-            return
+            i = input('\nTekan enter untuk kembali')
         
-    i = input("Tekan Enter untuk kembali...")
     daftar_toko()
 
 #FITUR KERANJANG BELANJA
@@ -1674,8 +1648,7 @@ def checkout(total_harga):
     print(f'{"Barang":<20} {"Nama Toko":<15} {"Jumlah":<8} {"Harga Satuan":<12} {"Subtotal":<12}')
     print('-' * 78)
 
-    # Validasi dan tampilkan barang di keranjang
-    transaksi = []  # Menyimpan transaksi saat ini
+    transaksi = []  
     for item in keranjang:
         if not all(key in item for key in ['barang', 'harga', 'jumlah', 'toko']):
             continue
@@ -1683,7 +1656,6 @@ def checkout(total_harga):
         subtotal = item['jumlah'] * item['harga']
         print(f'{item["barang"]:<20} {item["toko"]:<15} {item["jumlah"]:<8} Rp{item["harga"]:<12,} Rp{subtotal:<12}')
         
-        # Tambahkan item ke transaksi saat ini
         transaksi.append({
             'barang': item['barang'],
             'toko': item['toko'],
@@ -1696,13 +1668,11 @@ def checkout(total_harga):
     print(f'Total Belanja: Rp{total_harga:,}')
     print('\nTerima kasih telah berbelanja!')
 
-    # Simpan transaksi ke riwayat belanja
     riwayat_belanja.append({
         'total': total_harga,
         'item': transaksi
     })
 
-    # Kosongkan keranjang
     keranjang.clear()
     input('\nTekan enter untuk kembali ke menu utama')
     perbarui_histori_penjualan(riwayat_belanja)
@@ -1736,14 +1706,10 @@ def hapus_keranjang_belanja(user):
         pilihan = int(input('\nMasukkan nomor barang yang ingin dihapus: '))
         if 1 <= pilihan <= len(keranjang):
             item_hapus = keranjang.pop(pilihan - 1)
-            # Kembalikan stok ke file CSV
             file_barang = os.path.join(folder_toko, item_hapus['toko'], f'{item_hapus["toko"]}.csv')
             if os.path.exists(file_barang):
-                # Membaca file CSV
                 baca = pd.read_csv(file_barang)
-                # Cari barang yang sesuai dan tambahkan stoknya
                 baca.loc[baca['barang'] == item_hapus['barang'], 'stok'] += item_hapus['jumlah']
-                # Simpan kembali file CSV
                 baca.to_csv(file_barang, index=False)
                 print(f'{item_hapus["barang"]} dari {item_hapus["toko"]} telah dihapus dari keranjang.')
         else:
@@ -1785,17 +1751,14 @@ def ubah_jumlah_barang(user):
             item = keranjang[pilihan - 1]
             file_barang = os.path.join(folder_toko, item['toko'], f'{item['toko']}.csv')
 
-            # Ambil stok maksimum dari file toko
             baca = pd.read_csv(file_barang)
             stok_tersedia = baca.loc[baca['barang'] == item['barang'], 'stok'].values[0] + item['jumlah']  # Tambahkan kembali stok lama
             
             print(f"Stok tersedia untuk {item['barang']}: {stok_tersedia}")
             jumlah_baru = int(input(f"Masukkan jumlah baru untuk {item['barang']}: "))
             if 0 < jumlah_baru <= stok_tersedia:
-                # Update stok di file toko
                 baca.loc[baca['barang'] == item['barang'], 'stok'] = stok_tersedia - jumlah_baru
                 baca.to_csv(file_barang, index=False)
-                # Update keranjang
                 item['jumlah'] = jumlah_baru
                 print(f"Jumlah {item['barang']} dari {item['toko']} telah diperbarui menjadi {jumlah_baru}.")
             else:
@@ -1812,16 +1775,13 @@ def simpan_riwayat_belanja(user, riwayat_belanja):
     folder_pembeli = 'data_pembeli'
     sub_folder = os.path.join(folder_pembeli, f'{user}')
 
-    # Buat folder jika belum ada
     if not os.path.exists(folder_pembeli):
         os.makedirs(folder_pembeli)
     if not os.path.exists(sub_folder):
         os.makedirs(sub_folder)
 
-    # Tentukan path file CSV untuk menyimpan riwayat
     histori = os.path.join(sub_folder, f'histori_{user}.csv')
 
-    # Siapkan data untuk disimpan ke CSV
     data = []
     for transaksi in riwayat_belanja:
         tanggal_transaksi = transaksi.get('tanggal', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -1836,25 +1796,20 @@ def simpan_riwayat_belanja(user, riwayat_belanja):
                 'total': transaksi['total']
             })
 
-    # Periksa apakah file riwayat sudah ada
     try:
         if os.path.exists(histori):
-            # Baca data lama
             df_lama = pd.read_csv(histori)
-            # Gabungkan data lama dengan data baru
             df_baru = pd.DataFrame(data)
             df_tergabung = pd.concat([df_lama, df_baru], ignore_index=True)
         else:
-            # Jika file tidak ada, gunakan hanya data baru
             df_tergabung = pd.DataFrame(data)
         
-        # Simpan ke file CSV
         df_tergabung.to_csv(histori, index=False)
         print(f"Riwayat belanja telah berhasil disimpan untuk user {user}.")
     except Exception as e:
         print(f"Error menyimpan file riwayat: {e}")
 
-def tampilkan_riwayat_belanja(user, riwayat_belanja):
+def tampilkan_riwayat_belanja(user):
     sub_folder = os.path.join(folder_pembeli, f'{user}')
     histori_file = os.path.join(sub_folder, f'histori_{user}.csv')
     os.system('cls')
@@ -1870,7 +1825,6 @@ def tampilkan_riwayat_belanja(user, riwayat_belanja):
         input('\nTekan enter untuk kembali ke menu utama')
         return
 
-    # Baca file riwayat belanja
     try:
         histori_df = pd.read_csv(histori_file)
     except Exception as e:
@@ -1878,7 +1832,6 @@ def tampilkan_riwayat_belanja(user, riwayat_belanja):
         input('\nTekan enter untuk kembali ke menu utama')
         return
 
-    # Tampilkan seluruh riwayat belanja
     if histori_df.empty:
         print('Belum ada riwayat belanja.')
     else:
@@ -1892,7 +1845,7 @@ def tampilkan_riwayat_belanja(user, riwayat_belanja):
                     f'{row["barang"]:<20} {row["toko"]:<15} {row["jumlah"]:<8} '
                     f'Rp{row["harga"]:<12,} Rp{row["subtotal"]:<12,}'
                 )
-            total = transaksi['total'].iloc[0]  # Ambil total dari salah satu baris
+            total = transaksi['total'].iloc[0] 
             print('-' * 78)
             print(f'Total Belanja: Rp{total:,}')
             print()
